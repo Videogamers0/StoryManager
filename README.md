@@ -1,6 +1,8 @@
 # Story Manager
 Windows desktop program for downloading, organizing, and viewing your favorite stories from [Literotica](https://literotica.com/stories/). Free and open-source, available under [MIT license](https://github.com/git/git-scm.com/blob/main/MIT-LICENSE.txt).
 
+[Download the latest .exe here](https://github.com/Videogamers0/StoryManager/releases)
+
 ## Features
 
 - Download and save stories for offline viewing
@@ -39,6 +41,8 @@ Windows desktop program for downloading, organizing, and viewing your favorite s
 
 ## FAQS
 
+- Is this Windows-only?
+  - Yes. It targets `net7.0-windows` instead of `net7.0` because it uses WPF.
 - Where are the stories saved?
   - *%MyDocuments%\StoryManager\Stories\Literotica\{AuthorName}\{StoryTitle}*
     - This is usually something like *"C:\Users\{Username}\Documents\StoryManager\Stories\Literotica\"*
