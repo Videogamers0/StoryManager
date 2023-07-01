@@ -1,0 +1,307 @@
+﻿<UserControl x:Class="StoryManager.UI.StoriesList"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:StoryManager.UI"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             mc:Ignorable="d" 
+             d:DesignHeight="200" d:DesignWidth="250">
+
+    <UserControl.Resources>
+        <Style TargetType="{x:Type ListBoxItem}" x:Key="StoryListItemStyle">
+            <Setter Property="Padding" Value="4,3" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                        <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}"  BorderThickness="{TemplateBinding BorderThickness}" 
+                                Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="true">
+                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="IsMouseOver" Value="True" />
+                                </MultiTrigger.Conditions>
+                                <Setter TargetName="Bd" Property="Background" Value="#7791ed" />
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="Gray" />
+                                <Setter Property="TextElement.Foreground" Value="White" />
+                            </MultiTrigger>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="Selector.IsSelectionActive" Value="False" />
+                                    <Condition Property="IsSelected" Value="True" />
+                                </MultiTrigger.Conditions>
+                                <Setter TargetName="Bd" Property="Background" Value="#4366e0" />
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="Gray" />
+                                <Setter Property="TextElement.Foreground" Value="White" />
+                            </MultiTrigger>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="Selector.IsSelectionActive" Value="True" />
+                                    <Condition Property="IsSelected" Value="True" />
+                                </MultiTrigger.Conditions>
+                                <Setter TargetName="Bd" Property="Background" Value="#4366e0" />
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="Black" />
+                                <Setter Property="TextElement.Foreground" Value="White" />
+                            </MultiTrigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="Bd" Property="TextElement.Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="ContextMenu">
+                <Setter.Value>
+                    <ContextMenu>
+                        <MenuItem Header="Add to Favorites" Command="{Binding AddToFavorites}" 
+                                  Visibility="{Binding IsStoryFavorited, Mode=OneWay, Converter={StaticResource InverseBooleanToVisibilityConverter}, FallbackValue=Collapsed}" />
+                        <MenuItem Header="Remove from Favorites" Command="{Binding RemoveFromFavorites}"
+                                  Visibility="{Binding IsStoryFavorited, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}" />
+
+                        <MenuItem Header="Add to 'Read-later'" Command="{Binding MarkAsQueued}" 
+                                  Visibility="{Binding IsQueued, Mode=OneWay, Converter={StaticResource InverseBooleanToVisibilityConverter}, FallbackValue=Collapsed}" />
+                        <MenuItem Header="Remove from 'Read-later'" Command="{Binding UnmarkAsQueued}"
+                                  Visibility="{Binding IsQueued, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}" />
+
+                        <MenuItem Header="Mark as ignored" Command="{Binding MarkAsIgnored}" 
+                                  ToolTip="Ignored stories are still stored locally on your computed, but can be hidden using the filter settings above this list"
+                                  Visibility="{Binding IsIgnored, Mode=OneWay, Converter={StaticResource InverseBooleanToVisibilityConverter}, FallbackValue=Collapsed}" />
+                        <MenuItem Header="Unmark as ignored" Command="{Binding UnmarkAsIgnored}"
+                                  ToolTip="Ignored stories are still stored locally on your computed, but can be hidden using the filter settings above this list"
+                                  Visibility="{Binding IsIgnored, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}" />
+                        
+                        <MenuItem Header="Delete story" Command="{Binding Delete}" />
+                    </ContextMenu>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="ItemsControl.AlternationIndex" Value="0">
+                    <Setter Property="Background" Value="#EFEFEF"></Setter>
+                </Trigger>
+                <Trigger Property="ItemsControl.AlternationIndex" Value="1">
+                    <Setter Property="Background" Value="White"></Setter>
+                </Trigger>
+                <DataTrigger Binding="{Binding IsIgnored, Mode=OneWay}" Value="True">
+                    <Setter Property="Opacity" Value="0.5" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        
+        <DataTemplate x:Key="StoryItemTemplate">
+            <DockPanel>
+                <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,4,0">
+                    <!-- Selection indicator -->
+                    <TextBlock FontFamily="Marlett" Text="8" FontSize="16" VerticalAlignment="Center" Margin="0,0,1,0" d:Visibility="Visible"
+                               Visibility="{Binding IsSelected, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}" />
+
+                    <!-- Read/Unread -->
+                    <Grid VerticalAlignment="Center" d:Visibility="Visible"
+                          Visibility="{Binding MVM.Settings.DisplaySettings.ShowReadState, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}">
+                        <Button Style="{StaticResource BlankButton}" Command="{Binding MarkAsRead}" d:Visibility="Visible"
+                                Visibility="{Binding IsRead, Mode=OneWay, Converter={StaticResource InverseBooleanToVisibilityConverter},FallbackValue=Collapsed}"
+                                ToolTip="This story is unread. Click to mark as read.">
+                            <ContentControl Content="{StaticResource UnreadIcon}" />
+                        </Button>
+                        <Button Style="{StaticResource BlankButton}" Command="{Binding MarkAsUnread}" d:Visibility="Collapsed"
+                                Visibility="{Binding IsRead, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter},FallbackValue=Collapsed}"
+                                ToolTip="This story is read. Click to mark as un-read.">
+                            <ContentControl Content="{StaticResource ReadIcon}" />
+                        </Button>
+                    </Grid>
+
+                    <!-- Favorites -->
+                    <local:FavoritesToggle VerticalAlignment="Center" Margin="4,0,0,0" ShowIfUnfavorited="False" IsFavorited="{Binding IsStoryFavorited, Mode=TwoWay}" />
+                </StackPanel>
+
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Category / Date -->
+                    <DockPanel Grid.Row="0" Grid.Column="0" TextElement.FontSize="10">
+                        <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" Margin="0,0,0,2" d:Visibility="Visible"
+                                   Visibility="{Binding MVM.Settings.DisplaySettings.ShowCategory, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}">
+                            <Hyperlink NavigateUri="{Binding PrimaryCategory.pageUrl, Mode=OneWay}" RequestNavigate="OpenCategoryInBrowser">
+                                <Run Text="{Binding PrimaryCategory.pageUrl, Mode=OneWay}" d:Text="category-url" />
+                            </Hyperlink>
+                        </TextBlock>
+                        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,0,2"
+                                   FontStyle="Italic" Foreground="Gray" d:Visibility="Visible" d:Text="01/11/2021"
+                                   Visibility="{Binding MVM.Settings.DisplaySettings.ShowDateApproved, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}"
+                                   Text="{Binding DateApprovedString, Mode=OneWay, FallbackValue='&lt;date&gt;'}" />
+                    </DockPanel>
+
+                    <!-- Overall Rating / Title -->
+                    <Grid Grid.Row="1" Grid.Column="0">
+                        <TextBlock TextWrapping="Wrap" d:Visibility="Visible"
+                                   Visibility="{Binding MVM.Settings.DisplaySettings.ShowOverallRating, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}">
+                            <Run FontStyle="Italic" FontSize="10" Foreground="Gray" Text="(" /><!--
+                            --><Run FontStyle="Italic" FontSize="10" Foreground="Gray"
+                                    Text="{Binding AverageRating, Mode=OneWay, FallbackValue=0.0, StringFormat={}{0:0.00}}" d:Text="4.56" /><!--
+                            --><Run FontStyle="Italic" FontSize="10" Foreground="Gray" Text=")" />
+                            <Run Text="{Binding Title, Mode=OneWay}" />
+                        </TextBlock>
+
+                        <TextBlock TextWrapping="Wrap" Text="{Binding Title, Mode=OneWay}" d:Visibility="Collapsed"
+                                   Visibility="{Binding MVM.Settings.DisplaySettings.ShowOverallRating, Mode=OneWay, Converter={StaticResource InverseBooleanToVisibilityConverter}, FallbackValue=Collapsed}" />
+                    </Grid>
+
+                    <!-- User Rating / Download date -->
+                    <DockPanel Grid.Row="2" Grid.Column="0">
+                        <local:RatingControl DockPanel.Dock="Left" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0,1,0,0" Width="60" Height="16" 
+                                             Value="{Binding BindableUserRating, Mode=TwoWay, FallbackValue=0}" d:Value="4" d:Visibility="Visible"
+                                             Visibility="{Binding MVM.Settings.DisplaySettings.ShowUserRating, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}" />
+                        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,1,0,0" FontSize="10"
+                                   FontStyle="Italic" Foreground="Gray" d:Visibility="Visible" d:Text="01/11/2021"
+                                   Visibility="{Binding MVM.Settings.DisplaySettings.ShowDateDownloaded, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}"
+                                   Text="{Binding DownloadedAt, Mode=OneWay, FallbackValue='&lt;date&gt;', StringFormat='MM/dd/yyyy h:mmtt'}" />
+                    </DockPanel>
+                </Grid>
+            </DockPanel>
+        </DataTemplate>
+
+        <Style TargetType="{x:Type ListBox}" x:Key="StoryListStyle">
+            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
+            <Setter Property="BorderBrush" Value="DarkGray" />
+            <Setter Property="AlternationCount" Value="2" />
+            <Setter Property="ItemContainerStyle" Value="{StaticResource StoryListItemStyle}" />
+            <Setter Property="ItemTemplate" Value="{StaticResource StoryItemTemplate}" />
+            <Setter Property="Background" Value="White" />
+            <!-- Prevent Right-Clicks from changing the selected item -->
+            <!-- See also: https://stackoverflow.com/a/3011814 -->
+            <EventSetter Event="PreviewMouseRightButtonDown" Handler="SwallowMouseEvent" />
+            <!--<Setter Property="Background" Value="Transparent" />-->
+            <!--<Style.Triggers>
+                <DataTrigger Binding="{Binding Settings.IsDarkMode, Mode=OneWay, FallbackValue=False}" Value="True">
+                    <Setter Property="Background" Value="#FF272424" />
+                    <Setter Property="TextElement.Foreground" Value="White" />
+                </DataTrigger>
+            </Style.Triggers>-->
+        </Style>
+
+        <Style TargetType="{x:Type GroupItem}" x:Key="AuthorGroupingStyle">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <GroupBox Margin="2" BorderBrush="Black" BorderThickness="1">
+                            <GroupBox.Style>
+                                <Style TargetType="{x:Type GroupBox}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Name.IsSelected, Mode=OneWay}" Value="True">
+                                            <Setter Property="Background" Value="#8fadd8e6" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </GroupBox.Style>
+                            <GroupBox.Header>
+                                <Expander x:Name="GroupExpander" IsExpanded="{Binding Name.IsExpanded, Mode=TwoWay}" Margin="1,4,1,0">
+                                    <Expander.Header>
+                                        <WrapPanel Orientation="Horizontal" VerticalAlignment="Bottom">
+                                            <WrapPanel.ContextMenu>
+                                                <ContextMenu>
+                                                    <MenuItem Header="Open author's webpage in browser" Command="{Binding Name.OpenAuthorWebpage}" />
+                                                    <MenuItem Header="Copy author's webpage to clipboard" Command="{Binding Name.CopyAuthorWebpageToClipboard}" />
+                                                </ContextMenu>
+                                            </WrapPanel.ContextMenu>
+
+                                            <local:FavoritesToggle VerticalAlignment="Center" Margin="0,0,5,0" ShowIfUnfavorited="True" DataContext="{Binding Name}"
+                                                                   IsFavorited="{Binding IsFavorited, Mode=TwoWay}" />
+                                            <TextBlock Text="{Binding Name.AuthorName}" TextWrapping="Wrap" Margin="0,0,5,0" 
+                                                       FontWeight="SemiBold" FontSize="12" Foreground="#0000DF" />
+                                            <TextBlock TextWrapping="Wrap" VerticalAlignment="Bottom" FontStyle="Italic">
+                                                <Run Text="(" /><Run Text="{Binding ItemCount, Mode=OneWay}" /><Run Text=")" />
+                                            </TextBlock>
+                                        </WrapPanel>
+                                    </Expander.Header>
+                                </Expander>
+                            </GroupBox.Header>
+                            <ItemsPresenter Visibility="{Binding ElementName=GroupExpander, Mode=OneWay, Path=IsExpanded, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                        </GroupBox>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
+    <DockPanel>
+        <DockPanel DockPanel.Dock="Top">
+            <TextBlock DockPanel.Dock="Left" Margin="10,0,0,0" FontSize="14" FontWeight="SemiBold" Text="Stories:" />
+
+            <xctk:DropDownButton HorizontalAlignment="Right" Padding="2,1" BorderThickness="0" BorderBrush="{x:Null}" Background="#4FFFFFFF">
+                <xctk:DropDownButton.DropDownContent>
+                    <Border Background="White" BorderBrush="Black" BorderThickness="1" Padding="8" TextElement.Foreground="Black">
+                        <local:StoryFilterContent DataContext="{Binding Settings.DisplaySettings}" />
+                    </Border>
+                </xctk:DropDownButton.DropDownContent>
+
+                <Rectangle Fill="#FF6161FF" Width="16" Height="16" ToolTip="Filter / Sort stories">
+                    <Rectangle.OpacityMask>
+                        <ImageBrush ImageSource="/StoryManager;component/Resources/Filter_64x64.png" />
+                    </Rectangle.OpacityMask>
+                </Rectangle>
+            </xctk:DropDownButton>
+        </DockPanel>
+
+        <TabControl Padding="0" Background="Transparent">
+            <TabItem>
+                <TabItem.Header>
+                    <TextBlock Text="All" Padding="5,0" />
+                </TabItem.Header>
+
+                <ListBox Style="{StaticResource StoryListStyle}" VerticalAlignment="Top" Margin="0,4,0,0" IsSynchronizedWithCurrentItem="False"
+                         ItemsSource="{Binding SortedStories}" SelectedItem="{Binding BindableSelectedStory, Mode=TwoWay}" d:ItemsSource="{d:SampleData ItemCount=8}">
+                    <ListBox.GroupStyle>
+                        <GroupStyle ContainerStyle="{StaticResource AuthorGroupingStyle}" />
+                    </ListBox.GroupStyle>
+                </ListBox>
+            </TabItem>
+
+            <TabItem Header="Favorites">
+                <ListBox Style="{StaticResource StoryListStyle}" IsSynchronizedWithCurrentItem="False"
+                         ItemsSource="{Binding FavoritedStories}" SelectedItem="{Binding BindableSelectedStory, Mode=TwoWay}" d:ItemsSource="{d:SampleData ItemCount=8}">
+                    <ListBox.GroupStyle>
+                        <GroupStyle ContainerStyle="{StaticResource AuthorGroupingStyle}" />
+                    </ListBox.GroupStyle>
+                </ListBox>
+            </TabItem>
+            
+            <TabItem Header="Recent">
+                <ListBox Style="{StaticResource StoryListStyle}" IsSynchronizedWithCurrentItem="False"
+                         ItemsSource="{Binding RecentStories}" SelectedItem="{Binding BindableSelectedStory, Mode=TwoWay}" d:ItemsSource="{d:SampleData ItemCount=8}">
+                    
+                </ListBox>
+            </TabItem>
+
+            <TabItem Header="Read-later">
+                <Grid>
+                    <ListBox Style="{StaticResource StoryListStyle}" IsSynchronizedWithCurrentItem="False"
+                             ItemsSource="{Binding QueuedStories}" SelectedItem="{Binding BindableSelectedStory, Mode=TwoWay}" d:ItemsSource="{d:SampleData ItemCount=8}">
+
+                    </ListBox>
+                    <Border HorizontalAlignment="Center" VerticalAlignment="Center" Margin="8" Padding="6" 
+                            BorderBrush="Black" BorderThickness="1" Background="White" d:Visibility="Visible"
+                            Visibility="{Binding AreAnyStoriesQueued, Mode=OneWay, Converter={StaticResource InverseBooleanToVisibilityConverter}, FallbackValue=Collapsed}">
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock HorizontalAlignment="Center" FontSize="16" FontWeight="SemiBold" Text="No stories queued" />
+                            <Separator Margin="0,2" />
+                            <TextBlock TextWrapping="Wrap">
+                                <Run>To add a story to this tab, right-click the story and choose</Run>
+                                <Run FontWeight="SemiBold">Add to Read-later</Run>
+                            </TextBlock>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </DockPanel>
+</UserControl>

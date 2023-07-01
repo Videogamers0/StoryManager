@@ -1,0 +1,84 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0-windows</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <OutputType>WinExe</OutputType>
+    <UseWPF>True</UseWPF>
+    <ApplicationIcon>Booklet_Blue.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Resources\BarChart_64x64.png" />
+    <None Remove="Resources\Comment_64x64.png" />
+    <None Remove="Resources\DarkMode_64x64.png" />
+    <None Remove="Resources\Filter_64x64.png" />
+    <None Remove="Resources\folder-open_64x64.png" />
+    <None Remove="Resources\Heart-Filled_48x48.png" />
+    <None Remove="Resources\Heart-Outline_48x48.png" />
+    <None Remove="Resources\Info_16x16.png" />
+    <None Remove="Resources\LightMode_64x64.png" />
+    <None Remove="Resources\Notepad_64x64.png" />
+    <None Remove="Resources\Read_48x48.png" />
+    <None Remove="Resources\Search_64x64.png" />
+    <None Remove="Resources\Settings_64x64.png" />
+    <None Remove="Resources\Stack_64x64.png" />
+    <None Remove="Resources\Unread_48x48.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Remove="UI\App.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ApplicationDefinition Include="UI\App.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Booklet_Blue.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Extended.Wpf.Toolkit" Version="4.5.0" />
+    <PackageReference Include="Microsoft-WindowsAPICodePack-Shell" Version="1.1.5" />
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.1823.32" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Prism.Core" Version="8.1.97" />
+    <PackageReference Include="SharpClipboard" Version="3.5.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\BarChart_64x64.png" />
+    <Resource Include="Resources\Comment_64x64.png" />
+    <Resource Include="Resources\DarkMode_64x64.png" />
+    <Resource Include="Resources\Filter_64x64.png" />
+    <Resource Include="Resources\folder-open_64x64.png" />
+    <Resource Include="Resources\Heart-Filled_48x48.png" />
+    <Resource Include="Resources\Heart-Outline_48x48.png" />
+    <Resource Include="Resources\Info_16x16.png" />
+    <Resource Include="Resources\LightMode_64x64.png" />
+    <Resource Include="Resources\Notepad_64x64.png" />
+    <Resource Include="Resources\Read_48x48.png" />
+    <Resource Include="Resources\Search_64x64.png" />
+    <Resource Include="Resources\Settings_64x64.png" />
+    <Resource Include="Resources\Stack_64x64.png" />
+    <Resource Include="Resources\Unread_48x48.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+</Project>

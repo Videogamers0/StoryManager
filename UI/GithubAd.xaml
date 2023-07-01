@@ -1,0 +1,34 @@
+﻿<Window x:Class="StoryManager.UI.GithubAd"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:StoryManager.UI"
+        mc:Ignorable="d"
+        Title="Story Manager" MinWidth="100" MinHeight="100"
+        WindowStartupLocation="CenterOwner"
+        SizeToContent="Height"
+        ResizeMode="NoResize"
+        Width="324">
+
+    <StackPanel Orientation="Vertical" Margin="10">
+        <TextBlock TextWrapping="Wrap">
+            <Run>This is the</Run>
+            <Run FontWeight="Bold" Text="{Binding OpenedCount, Mode=OneWay, FallbackValue=100}" d:Text="100" /><!--
+            --><Run FontWeight="Bold">th</Run>
+            <Run>time you've opened this software. Wow! You must have a lot of good stories to read ;)</Run>
+            <LineBreak/>
+            <LineBreak/>
+            <Run>If you like this software, please give my</Run>
+            <Hyperlink NavigateUri="https://github.com/Videogamers0" RequestNavigate="Hyperlink_RequestNavigate" 
+                       ToolTip="https://github.com/Videogamers0" ToolTipService.InitialShowDelay="0">
+                <Run>github page</Run>
+            </Hyperlink>
+            <Run>a star so I can roleplay as a popular developer. Thanks!</Run>
+        </TextBlock>
+
+        <Border Height="16" />
+
+        <Button HorizontalAlignment="Center" IsDefault="True" Content="Close" Padding="24,1" Click="Close_Click" />
+    </StackPanel>
+</Window>

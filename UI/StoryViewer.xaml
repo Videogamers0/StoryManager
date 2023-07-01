@@ -1,0 +1,212 @@
+﻿<UserControl x:Class="StoryManager.UI.StoryViewer"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:StoryManager.UI"
+             xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             mc:Ignorable="d" 
+             d:DesignHeight="400" d:DesignWidth="600">
+
+    <DockPanel Grid.Row="0">
+        <DockPanel DockPanel.Dock="Top">
+            <Grid DockPanel.Dock="Right">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="2" />
+                    <RowDefinition Height="auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="60" />
+                    <ColumnDefinition Width="6" />
+                    <ColumnDefinition Width="60" />
+                    <ColumnDefinition Width="6" />
+                    <ColumnDefinition Width="60" />
+                    <ColumnDefinition Width="6" />
+                    <ColumnDefinition Width="60" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Fontsize:" FontSize="10" />
+                <ComboBox Grid.Row="2" Grid.Column="0" IsEditable="True" SelectedItem="{Binding Settings.BindableFontSize, Mode=TwoWay}">
+                    <ComboBox.ItemsSource>
+                        <x:Array Type="{x:Type sys:Int32}">
+                            <sys:Int32>12</sys:Int32>
+                            <sys:Int32>14</sys:Int32>
+                            <sys:Int32>16</sys:Int32>
+                            <sys:Int32>18</sys:Int32>
+                            <sys:Int32>20</sys:Int32>
+                            <sys:Int32>22</sys:Int32>
+                        </x:Array>
+                    </ComboBox.ItemsSource>
+                </ComboBox>
+
+                <TextBlock Grid.Row="0" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Text:" FontSize="10" />
+                <xctk:ColorPicker Grid.Row="2" Grid.Column="2" DisplayColorAndName="False" ColorMode="ColorCanvas" SelectedColor="{Binding Settings.BindableForegroundColor, Mode=TwoWay}" />
+
+                <TextBlock Grid.Row="0" Grid.Column="4" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Background:" FontSize="10" />
+                <xctk:ColorPicker Grid.Row="2" Grid.Column="4" DisplayColorAndName="False" ColorMode="ColorCanvas" SelectedColor="{Binding Settings.BindableBackgroundColor, Mode=TwoWay}" />
+
+                <TextBlock Grid.Row="0" Grid.Column="6" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Highlight:" FontSize="10" />
+                <xctk:ColorPicker Grid.Row="2" Grid.Column="6" DisplayColorAndName="False" ColorMode="ColorCanvas" SelectedColor="{Binding Settings.BindableHighlightColor, Mode=TwoWay}" />
+            </Grid>
+
+            <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" VerticalAlignment="Bottom">
+                <Button ToolTip="Navigate back to recent story" Command="{Binding NavigateStoryBack}">
+                    <TextBlock FontFamily="Marlett" Text="3" FontSize="14" />
+                </Button>
+                <Button ToolTip="Navigate forward to recent story" Command="{Binding NavigateStoryForward}">
+                    <TextBlock FontFamily="Marlett" Text="4" FontSize="14" />
+                </Button>
+            </StackPanel>
+
+            <TextBlock HorizontalAlignment="Center" FontWeight="SemiBold" FontSize="20" VerticalAlignment="Center" MinWidth="150" TextWrapping="Wrap" Margin="5,0">
+                <Hyperlink NavigateUri="Placeholder" RequestNavigate="OpenSelectedStoryInBrowser">
+                    <Run Text="{Binding SelectedStory.Title, Mode=OneWay, FallbackValue='&lt;No Story Selected&gt;'}" />
+                </Hyperlink>
+            </TextBlock>
+        </DockPanel>
+
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Center" d:Visibility="Visible"
+                    Visibility="{Binding SelectedStory.IsSaved, Mode=OneWay, Converter={StaticResource InverseBooleanToVisibilityConverter}, FallbackValue=Collapsed}">
+            <TextBlock Foreground="Yellow" FontWeight="SemiBold" Text="This story is unsaved">
+                <TextBlock.Effect>
+                    <DropShadowEffect ShadowDepth="2" Direction="330" Color="Black" Opacity="0.75" BlurRadius="1"/>
+                </TextBlock.Effect>
+            </TextBlock>
+            <Border Width="10" />
+            <TextBlock FontSize="10" VerticalAlignment="Bottom">
+                <Hyperlink Command="{Binding SelectedStory.SaveLocal}">Save to local file.</Hyperlink>
+            </TextBlock>
+        </StackPanel>
+        
+        <Grid DockPanel.Dock="Bottom" TextElement.FontSize="11">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="2" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="2" />
+                <RowDefinition Height="auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="5" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="12" />
+                <ColumnDefinition Width="auto" />
+            </Grid.ColumnDefinitions>
+            <Grid.Resources>
+                <Style TargetType="{x:Type Button}">
+                    <!--<Setter Property="Background" Value="Transparent" />-->
+                    <Setter Property="BorderThickness" Value="1" />
+                    <Setter Property="BorderBrush" Value="#2F000000" />
+                    <Setter Property="Padding" Value="4,2" />
+                    <Setter Property="Margin" Value="0,0,6,0" />
+                    <Setter Property="Cursor" Value="Hand" />
+                    <Setter Property="ToolTipService.InitialShowDelay" Value="200" />
+                </Style>
+            </Grid.Resources>
+
+            <TextBlock Grid.Row="0" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Center" Text="Highlighted keywords" />
+            <DockPanel Grid.Row="0" Grid.Column="2" HorizontalAlignment="Left">
+                <Image DockPanel.Dock="Right" Width="16" Height="16" Margin="4,0,0,0" VerticalAlignment="Center"
+                       Source="/Resources/Info_16x16.png" ToolTipService.InitialShowDelay="50">
+                    <Image.ToolTip>
+                        <TextBlock>
+                            <Run>A list of words to highlight in the document</Run>
+                            <LineBreak/>
+                            <Run>Matches whole word only, case-insensitive. For example, keyword 'ass' will not match words like 'assumed'.</Run>
+                            <LineBreak/>
+                            <Run>To match multiple words, separate them with a comma. EX: "ass,pussy"</Run>
+                            <LineBreak/>
+                            <Run>You may need to reload the story for changes to take effect.</Run>
+                        </TextBlock>
+                    </Image.ToolTip>
+                </Image>
+                <TextBox Text="{Binding Settings.BindableCommaDelimitedKeywords, Mode=TwoWay}" MinWidth="200" />
+            </DockPanel>
+
+            <!-- Chapter navigation buttons -->
+            <TextBlock Grid.Row="2" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Center" Text="Jump to Chapter:"
+                       Visibility="{Binding SelectedStory.HasMultipleChapters, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+            <ItemsControl Grid.Row="2" Grid.Column="2" ItemsSource="{Binding SelectedStory.ChapterNavButtons}" d:ItemsSource="{d:SampleData ItemCount=5}"
+                          Visibility="{Binding SelectedStory.HasMultipleChapters, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Margin="3,0" ToolTipService.InitialShowDelay="100">
+                            <TextBlock.ToolTip>
+                                <StackPanel Orientation="Vertical">
+                                    <TextBlock HorizontalAlignment="Center" Text="{Binding Chapter.Title, Mode=OneWay}" FontWeight="SemiBold" />
+                                    <Separator Margin="0,2" />
+                                    <TextBlock TextWrapping="Wrap" Text="{Binding Chapter.Description, Mode=OneWay}" />
+                                </StackPanel>
+                            </TextBlock.ToolTip>
+                            <Hyperlink Command="{Binding ScrollTo}">
+                                <Run Text="{Binding ChapterDisplayNumber, Mode=OneWay}" d:Text="#" />
+                            </Hyperlink>
+                        </TextBlock>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <!-- Page navigation buttons -->
+            <TextBlock Grid.Row="4" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Center" Text="Jump to Page:"
+                       Visibility="{Binding SelectedStory.HasMultiplePages, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            <ItemsControl Grid.Row="4" Grid.Column="2" ItemsSource="{Binding SelectedStory.PageNavButtons}" d:ItemsSource="{d:SampleData ItemCount=5}"
+                          Visibility="{Binding SelectedStory.HasMultiplePages, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Margin="3,0" ToolTipService.InitialShowDelay="100">
+                            <TextBlock.ToolTip>
+                                <StackPanel Orientation="Vertical">
+                                    <TextBlock HorizontalAlignment="Center" FontWeight="SemiBold">
+                                        <Run Text="{Binding Chapter.Title, Mode=OneWay}" />
+                                        <Run Text="(Page " /><Run Text="{Binding LocalPageDisplayNumber, Mode=OneWay}" /><Run Text=")" />
+                                    </TextBlock>
+                                    <Separator Margin="0,2" />
+                                    <TextBlock TextWrapping="Wrap" Text="{Binding Chapter.Description, Mode=OneWay}" />
+                                </StackPanel>
+                            </TextBlock.ToolTip>
+                            <Hyperlink Command="{Binding ScrollTo}">
+                                <Run Text="{Binding OverallPageDisplayNumber, Mode=OneWay}" d:Text="#" />
+                            </Hyperlink>
+                        </TextBlock>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <Button Grid.Row="0" Grid.RowSpan="3" Grid.Column="4" VerticalAlignment="Center" Margin="0"
+                    ToolTip="Open story local folder" Command="{Binding SelectedStory.OpenFolder}">
+                <Image Width="16" Height="16" Source="/Resources/folder-open_64x64.png" />
+            </Button>
+        </Grid>
+
+        <DockPanel Margin="0,2,0,4">
+            <Border BorderThickness="1" Margin="0,2,0,4">
+                <Border.Style>
+                    <Style TargetType="{x:Type Border}">
+                        <Setter Property="BorderBrush" Value="Black" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Settings.IsDarkMode, Mode=OneWay, FallbackValue=False}" Value="True">
+                                <Setter Property="BorderBrush" Value="White" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+
+                <wv2:WebView2 Name="WebView" />
+            </Border>
+        </DockPanel>
+    </DockPanel>
+</UserControl>

@@ -1,0 +1,97 @@
+﻿<Application x:Class="StoryManager.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:clr="clr-namespace:System;assembly=mscorlib"
+             xmlns:local="clr-namespace:StoryManager"
+             xmlns:converters="clr-namespace:StoryManager.VM.Helpers"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <ResourceDictionary>
+            <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+            <converters:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter" />
+            <converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
+
+            <converters:LiteroticaStoryUriConverter x:Key="LiteroticaStoryUriConverter" />
+            <converters:LiteroticaCategoryUriConverter x:Key="LiteroticaCategoryUriConverter" />
+            <converters:LiteroticaAuthorUriConverter x:Key="LiteroticaAuthorUriConverter" />
+
+            <Style TargetType="{x:Type Button}" x:Key="BlankButton">
+                <Setter Property="Margin" Value="0" />
+                <Setter Property="Padding" Value="0" />
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+                <Setter Property="Cursor" Value="Hand" />
+                <Setter Property="ToolTipService.InitialShowDelay" Value="150" />
+            </Style>
+
+            <Style TargetType="{x:Type Button}" x:Key="HyperlinkButton">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <ContentPresenter />
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.HotTrackBrushKey}}" />
+                <Setter Property="Cursor" Value="Hand" />
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="true">
+                        <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" />
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="Button">
+                                    <ControlTemplate.Resources>
+                                        <Style TargetType="{x:Type TextBlock}">
+                                            <Setter Property="TextDecorations" Value="Underline" />
+                                        </Style>
+                                    </ControlTemplate.Resources>
+                                    <ContentPresenter />
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+
+            <Color x:Key="UnreadIconColor">#FF7B2200</Color>
+            <Rectangle x:Key="UnreadIcon" x:Shared="False" Width="16" Height="16">
+                <Rectangle.Fill>
+                    <SolidColorBrush Color="{StaticResource UnreadIconColor}" />
+                </Rectangle.Fill>
+                <Rectangle.OpacityMask>
+                    <ImageBrush ImageSource="/StoryManager;component/Resources/Unread_48x48.png" />
+                </Rectangle.OpacityMask>
+            </Rectangle>
+
+            <Color x:Key="ReadIconColor">#FF313131</Color>
+            <Rectangle x:Key="ReadIcon" x:Shared="False" Width="16" Height="16">
+                <Rectangle.Fill>
+                    <SolidColorBrush Color="{StaticResource ReadIconColor}" />
+                </Rectangle.Fill>
+                <Rectangle.OpacityMask>
+                    <ImageBrush ImageSource="/StoryManager;component/Resources/Read_48x48.png" />
+                </Rectangle.OpacityMask>
+            </Rectangle>
+
+            <Color x:Key="FavoritesIconColor">#FFB91F3A</Color>
+            <Rectangle x:Key="UnfavoritedIcon" x:Shared="False" Width="16" Height="16">
+                <Rectangle.Fill>
+                    <SolidColorBrush Color="{StaticResource FavoritesIconColor}" />
+                </Rectangle.Fill>
+                <Rectangle.OpacityMask>
+                    <ImageBrush ImageSource="/StoryManager;component/Resources/Heart-Outline_48x48.png" />
+                </Rectangle.OpacityMask>
+            </Rectangle>
+            <Rectangle x:Key="FavoritedIcon" x:Shared="False" Width="16" Height="16">
+                <Rectangle.Fill>
+                    <SolidColorBrush Color="{StaticResource FavoritesIconColor}" />
+                </Rectangle.Fill>
+                <Rectangle.OpacityMask>
+                    <ImageBrush ImageSource="/StoryManager;component/Resources/Heart-Filled_48x48.png" />
+                </Rectangle.OpacityMask>
+            </Rectangle>
+            
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

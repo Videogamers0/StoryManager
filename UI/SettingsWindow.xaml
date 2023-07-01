@@ -1,0 +1,218 @@
+﻿<Window x:Class="StoryManager.UI.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:StoryManager.UI"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterOwner"
+        SizeToContent="Height"
+        Title="Settings" Width="550" Background="#EFEFEF"
+        MinHeight="250" MinWidth="250">
+
+    <Window.Resources>
+        <sys:Double x:Key="RowPadding">15</sys:Double>
+
+        <Style TargetType="{x:Type GroupBox}">
+            <Setter Property="Padding" Value="6" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="BorderBrush" Value="Gray" />
+        </Style>
+    </Window.Resources>
+    
+    <DockPanel Margin="10">
+        <Button DockPanel.Dock="Bottom" HorizontalAlignment="Center" Padding="30,3" Margin="0,8,0,0"
+                IsDefault="True" Content="Close" Click="Close_Click" />
+
+        <ScrollViewer Padding="0,0,5,0" VerticalScrollBarVisibility="Auto">
+            <StackPanel Orientation="Vertical">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" Text="Stories Folder:" />
+                    <Image DockPanel.Dock="Right" Width="16" Height="16" VerticalAlignment="Center" Margin="5,0,0,0" Source="/Resources/Info_16x16.png">
+                        <Image.ToolTip>
+                            <TextBlock>
+                                The root folder where locally-saved stories will be saved to and loaded from.
+                                <LineBreak/>
+                                Warning - If you change this value, you will lose your settings that correspond to stories in the old folder! (Such as which stories in the old folder were favorited)
+                                <LineBreak/>
+                                Stories are saved within subfolders following this format: "{RootFolder}\{Author}\{Title}\story.html"
+                            </TextBlock>
+                        </Image.ToolTip>
+                    </Image>
+                    <Button DockPanel.Dock="Right" ToolTip="Browse" Padding="5,2" Command="{Binding BrowseStoriesFolder}" Cursor="Hand">
+                        <Image Width="16" Height="16" Source="/Resources/folder-open_64x64.png" />
+                    </Button>
+                    <TextBox Margin="8,0,0,0" IsReadOnly="True" Text="{Binding StoriesDirectory, Mode=OneWay}" />
+                </DockPanel>
+
+                <Border Height="{StaticResource RowPadding}" />
+
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock VerticalAlignment="Center" Text="Recent Stories History Size:" />
+                    <Border Width="8" />
+                    <xctk:IntegerUpDown Width="80" Value="{Binding HistorySize, Mode=TwoWay}" />
+                    <Image Width="16" Height="16" VerticalAlignment="Center" Margin="5,0,0,0" Source="/Resources/Info_16x16.png"
+                           ToolTip="Determines how many stories to display in the 'Recent' stories list.">
+                    </Image>
+                </StackPanel>
+
+                <Border Height="{StaticResource RowPadding}" />
+
+                <StackPanel Orientation="Vertical">
+                    <StackPanel Orientation="Horizontal">
+                        <CheckBox Content="Group all stories by author" IsChecked="{Binding GroupAllByAuthor, Mode=TwoWay}" />
+                        <Image Width="16" Height="16" VerticalAlignment="Center" Margin="5,0,0,0" Source="/Resources/Info_16x16.png">
+                            <Image.ToolTip>
+                                <TextBlock>
+                                    If checked, stories on the 'All' tab will be grouped by their author name, and sorted first by author name, then by story title.
+                                    <LineBreak/>
+                                    If unchecked, stories on the 'All' tab will not be grouped, and will be sorted only by their title.
+                                </TextBlock>
+                            </Image.ToolTip>
+                        </Image>
+                    </StackPanel>
+                    <Border Height="3" />
+                    <StackPanel Orientation="Horizontal">
+                        <CheckBox Content="Group favorited stories by author" IsChecked="{Binding GroupFavoritesByAuthor, Mode=TwoWay}" />
+                        <Image Width="16" Height="16" VerticalAlignment="Center" Margin="5,0,0,0" Source="/Resources/Info_16x16.png">
+                            <Image.ToolTip>
+                                <TextBlock>
+                                    If checked, stories on the 'Favorites' tab will be grouped by their author name, and sorted first by author name, then by story title.
+                                    <LineBreak/>
+                                    If unchecked, stories on the 'Favorites' tab will not be grouped, and will be sorted only by their title.
+                                </TextBlock>
+                            </Image.ToolTip>
+                        </Image>
+                    </StackPanel>
+                </StackPanel>
+
+                <Border Height="{StaticResource RowPadding}" />
+
+                <GroupBox Header="App Theme:">
+                    <StackPanel Orientation="Horizontal">
+                        <ToggleButton Padding="4,2" IsChecked="{Binding IsLightMode, Mode=TwoWay, FallbackValue=True}">
+                            <StackPanel Orientation="Horizontal">
+                                <Image VerticalAlignment="Center" Width="16" Height="16" Source="/Resources/LightMode_64x64.png" />
+                                <Border Width="5" />
+                                <TextBlock VerticalAlignment="Center" Text="Light Mode" />
+                            </StackPanel>
+                        </ToggleButton>
+                        <Border Width="8" />
+                        <ToggleButton Padding="4,2" IsChecked="{Binding IsDarkMode, Mode=TwoWay, FallbackValue=False}">
+                            <StackPanel Orientation="Horizontal">
+                                <Image VerticalAlignment="Center" Width="16" Height="16" Source="/Resources/DarkMode_64x64.png" />
+                                <Border Width="5" />
+                                <TextBlock VerticalAlignment="Center" Text="Dark Mode" />
+                            </StackPanel>
+                        </ToggleButton>
+                    </StackPanel>
+                </GroupBox>
+
+                <Border Height="{StaticResource RowPadding}" />
+
+                <GroupBox Header="Colors:">
+                    <StackPanel Orientation="Vertical">
+                        <Grid DockPanel.Dock="Right">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="2" />
+                                <RowDefinition Height="auto" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="75" />
+                                <ColumnDefinition Width="12" />
+                                <ColumnDefinition Width="75" />
+                                <ColumnDefinition Width="12" />
+                                <ColumnDefinition Width="75" />
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Text:" FontSize="10" />
+                            <xctk:ColorPicker Grid.Row="2" Grid.Column="0" DisplayColorAndName="False" ColorMode="ColorCanvas" SelectedColor="{Binding BindableForegroundColor, Mode=TwoWay}" />
+
+                            <TextBlock Grid.Row="0" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Background:" FontSize="10" />
+                            <xctk:ColorPicker Grid.Row="2" Grid.Column="2" DisplayColorAndName="False" ColorMode="ColorCanvas" SelectedColor="{Binding BindableBackgroundColor, Mode=TwoWay}" />
+
+                            <TextBlock Grid.Row="0" Grid.Column="4" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Highlight:" FontSize="10" />
+                            <xctk:ColorPicker Grid.Row="2" Grid.Column="4" DisplayColorAndName="False" ColorMode="ColorCanvas" SelectedColor="{Binding BindableHighlightColor, Mode=TwoWay}" />
+                        </Grid>
+
+                        <Border Height="{StaticResource RowPadding}" />
+
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock VerticalAlignment="Center" Text="Load Preset:" />
+                            <Border Width="6" />
+                            <ComboBox x:Name="PresetColorPalettesDropdown" Width="60" ItemsSource="{Binding PresetColorPalettes}" SelectedIndex="{Binding SelectedColorPaletteIndex, Mode=TwoWay}" 
+                                      IsSynchronizedWithCurrentItem="False" Grid.IsSharedSizeScope="True">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto" />
+                                            </Grid.RowDefinitions>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="auto" SharedSizeGroup="PaletteNameColumn" />
+                                                <ColumnDefinition Width="5" />
+                                                <ColumnDefinition Width="auto" />
+                                                <ColumnDefinition Width="5" />
+                                                <ColumnDefinition Width="auto" />
+                                                <ColumnDefinition Width="5" />
+                                                <ColumnDefinition Width="auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <Grid.Resources>
+                                                <Style TargetType="{x:Type Rectangle}">
+                                                    <Setter Property="Stroke" Value="Gray" />
+                                                    <Setter Property="StrokeThickness" Value="1" />
+                                                    <Setter Property="Width" Value="24" />
+                                                    <Setter Property="Height" Value="16" />
+                                                </Style>
+                                            </Grid.Resources>
+
+                                            <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" TextAlignment="Right" Text="{Binding Name, Mode=OneTime}" d:Text="Palette Name" />
+
+                                            <Rectangle Grid.Row="0" Grid.Column="2">
+                                                <Rectangle.Fill>
+                                                    <SolidColorBrush Color="{Binding ForegroundColor, Mode=OneTime}" />
+                                                </Rectangle.Fill>
+                                            </Rectangle>
+
+                                            <Rectangle Grid.Row="0" Grid.Column="4">
+                                                <Rectangle.Fill>
+                                                    <SolidColorBrush Color="{Binding BackgroundColor, Mode=OneTime}" />
+                                                </Rectangle.Fill>
+                                            </Rectangle>
+
+                                            <Rectangle Grid.Row="0" Grid.Column="6">
+                                                <Rectangle.Fill>
+                                                    <SolidColorBrush Color="{Binding HighlightColor, Mode=OneTime}" />
+                                                </Rectangle.Fill>
+                                            </Rectangle>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </StackPanel>
+                    </StackPanel>
+                </GroupBox>
+
+                <Border Height="{StaticResource RowPadding}" />
+
+                <Button HorizontalAlignment="Left" Padding="10,2" Command="{Binding OpenSettingsFolder}"
+                        ToolTip="Opens the local folder where your settings are stored">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Width="16" Height="16" VerticalAlignment="Center" Source="/Resources/Settings_64x64.png" />
+                        <Border Width="6" />
+                        <TextBlock Text="Open settings folder" />
+                    </StackPanel>
+                </Button>
+
+                <!-- Other ideas:
+                    [Checkbox: Force download] - re-downloads stories if they already exist
+                    [Checkbox: Auto-mark as read when scrolling to bottom]
+                -->
+                    
+            </StackPanel>
+        </ScrollViewer>
+    </DockPanel>
+</Window>

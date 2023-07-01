@@ -1,0 +1,242 @@
+﻿<UserControl x:Class="StoryManager.UI.SearchContent"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:StoryManager.UI"
+             mc:Ignorable="d" 
+             d:DesignHeight="250" d:DesignWidth="724"
+             d:Background="#FFE4E4E4">
+
+    <UserControl.Resources>
+        <Geometry x:Key="StarGeometry">
+            F1 M 145.637,174.227L 127.619,110.39L 180.809,70.7577L 114.528,68.1664L 93.2725,5.33333L 70.3262,67.569L 4,68.3681L 56.0988,109.423L 36.3629,172.75L 91.508,135.888L 145.637,174.227 Z
+        </Geometry>
+    </UserControl.Resources>
+
+    <Grid>
+        <DockPanel>
+            <DockPanel DockPanel.Dock="Top">
+                <Button DockPanel.Dock="Right" Padding="4" IsEnabled="{Binding CanCommitSearch, Mode=OneWay}" Command="{Binding CommitSearch}">
+                    <Image Width="16" Height="16" Source="/Resources/Search_64x64.png" />
+                </Button>
+                <TextBox Padding="6,4" Text="{Binding SearchQuery, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                    <TextBox.InputBindings>
+                        <KeyBinding Command="{Binding CommitSearch}" Key="Enter" />
+                    </TextBox.InputBindings>
+                </TextBox>
+            </DockPanel>
+
+            <DockPanel Margin="0,5,0,0" d:Visibility="Visible"
+                       Visibility="{Binding HasSearchResult, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}">
+
+                <Border DockPanel.Dock="Bottom" Background="White" Padding="10,6" Margin="0,6,0,0">
+                    <DockPanel>
+                        <!-- Results first/last index -->
+                        <TextBlock DockPanel.Dock="Right" Margin="20,0,0,0">
+                            <Run Text="{Binding SearchResult.FirstResultIndex, Mode=OneWay, FallbackValue=1}" d:Text="1" />
+                            <Run Text="-" />
+                            <Run Text="{Binding SearchResult.LastResultIndex, Mode=OneWay, FallbackValue=50}" d:Text="50" />
+                            <Run Text="of" />
+                            <Run Text="{Binding SearchResult.TotalResults, Mode=OneWay, FallbackValue=0}" d:Text="1866" />
+                            <Run Text="Stories" />
+                        </TextBlock>
+
+                        <!-- Page navigation buttons -->
+                        <DockPanel HorizontalAlignment="Left">
+                            <Button DockPanel.Dock="Left" VerticalAlignment="Center" ToolTip="Previous page" Command="{Binding SearchResult.PreviousPage}"
+                                    IsEnabled="{Binding SearchResult.IsFirstPage, Mode=OneWay, Converter={StaticResource InverseBooleanConverter}}">
+                                <TextBlock FontFamily="Marlett" Text="3" />
+                            </Button>
+                            <Button DockPanel.Dock="Right" VerticalAlignment="Center" ToolTip="Next page" Command="{Binding SearchResult.NextPage}"
+                                    IsEnabled="{Binding SearchResult.IsLastPage, Mode=OneWay, Converter={StaticResource InverseBooleanConverter}}">
+                                <TextBlock FontFamily="Marlett" Text="4" />
+                            </Button>
+                            <ItemsControl Margin="30,0" ItemsSource="{Binding SearchResult.Pages}"
+                                          d:ItemsSource="{d:SampleData ItemCount=8}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Orientation="Horizontal" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Margin="4,0" FontSize="14">
+                                            <Hyperlink Command="{Binding Open}">
+                                                <Hyperlink.Style>
+                                                    <Style TargetType="{x:Type Hyperlink}">
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsSelected, Mode=OneWay}" Value="True" d:Value="True">
+                                                                <Setter Property="Foreground" Value="Green" />
+                                                                <Setter Property="FontWeight" Value="Bold" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Hyperlink.Style>
+                                                <!-- &#160; is a non-breaking space character, used to pad the run's width and make the page navigation buttons easier to click on -->
+                                                <Run Text="{Binding PageNumber, Mode=OneWay, StringFormat='&#160;{0}&#160;'}" d:Text="&#160;#&#160;" />
+                                            </Hyperlink>
+                                        </TextBlock>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </DockPanel>
+                    </DockPanel>
+                </Border>
+
+                <ScrollViewer x:Name="ResultsScroller" VerticalScrollBarVisibility="Auto" Padding="0,0,4,0">
+                    <ItemsControl x:Name="ResultsList" ItemsSource="{Binding SearchResult.Data.data, Mode=OneWay}" SizeChanged="ItemsControl_SizeChanged"
+                                  d:ItemsSource="{d:SampleData ItemCount=8}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel d:ItemWidth="350" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Button BorderBrush="DarkGray" BorderThickness="1" Background="White" Margin="0,2" Padding="10,5" HorizontalContentAlignment="Stretch"
+                                        Command="{Binding ElementName=ResultsList, Path=DataContext.OpenStory}" CommandParameter="{Binding}">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="auto" />
+                                            <RowDefinition Height="auto" />
+                                            <RowDefinition Height="auto" />
+                                            <RowDefinition Height="auto" />
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <!-- Title -->
+                                        <TextBlock Grid.Row="0" Grid.Column="0" FontSize="14" FontWeight="SemiBold" TextDecorations="Underline">
+                                        <Hyperlink RequestNavigate="Hyperlink_RequestNavigate"
+                                                   NavigateUri="{Binding url, Mode=OneTime, Converter={StaticResource LiteroticaStoryUriConverter}}">
+                                            <Run Text="{Binding title, Mode=OneTime, FallbackValue=Title}" d:Text="Story Title" />
+                                        </Hyperlink>
+                                        </TextBlock>
+
+                                        <!-- Description -->
+                                        <TextBlock Grid.Row="1" Grid.Column="0" FontSize="12" TextWrapping="Wrap" 
+                                                   Text="{Binding description, Mode=OneTime, FallbackValue=Description}" d:Text="Story Description." />
+
+                                        <!-- Author / Category / Approval_Date -->
+                                        <DockPanel Grid.Row="2" Grid.Column="0" TextElement.FontSize="10">
+                                            <TextBlock DockPanel.Dock="Right">
+                                                <Hyperlink RequestNavigate="Hyperlink_RequestNavigate"
+                                                           NavigateUri="{Binding category_info.pageUrl, Mode=OneTime, Converter={StaticResource LiteroticaCategoryUriConverter}}">
+                                                    <Run Text="{Binding category_info.pageUrl, Mode=OneTime, FallbackValue='Category Name'}" d:Text="Category Name" />
+                                                </Hyperlink>
+                                                <Run Text="{Binding date_approve, Mode=OneTime, FallbackValue='Approval Date'}" d:Text="01/01/2023" />
+                                            </TextBlock>
+                                            <TextBlock>
+                                                <Run Text="by" />
+                                                <Hyperlink RequestNavigate="Hyperlink_RequestNavigate"
+                                                           NavigateUri="{Binding author.userid, Mode=OneTime, Converter={StaticResource LiteroticaAuthorUriConverter}}">
+                                                    <Run Text="{Binding authorname, Mode=OneTime, FallbackValue=Author}" d:Text="Author" />
+                                                </Hyperlink>
+                                            </TextBlock>
+                                        </DockPanel>
+
+                                        <StackPanel Grid.Row="3" Grid.Column="0" Orientation="Horizontal" Margin="0,4,0,0" TextElement.FontSize="10" TextElement.Foreground="Gray">
+                                            <!-- IsHot -->
+                                            <TextBlock VerticalAlignment="Center" Padding="3,0" Foreground="White" Background="Red"
+                                                       Text="H" FontWeight="SemiBold" FontSize="9" ToolTip="Hot" Margin="0,0,16,0" d:Visibility="Visible"
+                                                       Visibility="{Binding is_hot, Mode=OneTime, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}" />
+
+                                            <!-- Rating -->
+                                            <StackPanel Orientation="Horizontal" ToolTip="Rating" VerticalAlignment="Center" Margin="0,0,16,0">
+                                                <Viewbox Width="12" Height="12" Margin="0,0,2,1">
+                                                    <Path Fill="DarkGray" Data="{StaticResource StarGeometry}" />
+                                                </Viewbox>
+                                                <TextBlock Text="{Binding rate_all, Mode=OneTime, FallbackValue=5.0}" d:Text="4.63" />
+                                            </StackPanel>
+
+                                            <!-- Views -->
+                                            <StackPanel Orientation="Horizontal" ToolTip="Views" VerticalAlignment="Center" Margin="0,0,16,0">
+                                                <Rectangle Width="12" Height="12" Fill="DarkGray" Margin="0,0,2,0">
+                                                    <Rectangle.OpacityMask>
+                                                        <ImageBrush ImageSource="/StoryManager;component/Resources/BarChart_64x64.png" />
+                                                    </Rectangle.OpacityMask>
+                                                </Rectangle>
+                                                <TextBlock Text="{Binding view_count, Mode=OneTime, FallbackValue=0, StringFormat={}{0:N0}}" d:Text="6700" />
+                                            </StackPanel>
+
+                                            <!-- Favorites -->
+                                            <StackPanel Orientation="Horizontal" ToolTip="Favorites" VerticalAlignment="Center" Margin="0,0,16,0">
+                                                <Rectangle Width="12" Height="12" Fill="DarkGray" Margin="0,0,2,0">
+                                                    <Rectangle.OpacityMask>
+                                                        <ImageBrush ImageSource="/StoryManager;component/Resources/Heart-Filled_48x48.png" />
+                                                    </Rectangle.OpacityMask>
+                                                </Rectangle>
+                                                <TextBlock Text="{Binding favorite_count, Mode=OneTime, FallbackValue=0, StringFormat={}{0:N0}}" d:Text="31" />
+                                            </StackPanel>
+
+                                            <!-- Comments -->
+                                            <StackPanel Orientation="Horizontal" ToolTip="Comments" VerticalAlignment="Center" Margin="0,0,16,0">
+                                                <Rectangle Width="12" Height="12" Fill="DarkGray" Margin="0,0,2,0">
+                                                    <Rectangle.OpacityMask>
+                                                        <ImageBrush ImageSource="/StoryManager;component/Resources/Comment_64x64.png" />
+                                                    </Rectangle.OpacityMask>
+                                                </Rectangle>
+                                                <TextBlock Text="{Binding comment_count, Mode=OneTime, FallbackValue=0, StringFormat={}{0:N0}}" d:Text="4" />
+                                            </StackPanel>
+
+                                            <!-- Lists -->
+                                            <StackPanel Orientation="Horizontal" ToolTip="Lists" VerticalAlignment="Center" Margin="0,0,0,0">
+                                                <Rectangle Width="12" Height="12" Fill="DarkGray" Margin="0,0,2,0">
+                                                    <Rectangle.OpacityMask>
+                                                        <ImageBrush ImageSource="/StoryManager;component/Resources/Notepad_64x64.png" />
+                                                    </Rectangle.OpacityMask>
+                                                </Rectangle>
+                                                <TextBlock Text="{Binding reading_lists_count, Mode=OneTime, FallbackValue=0, StringFormat={}{0:N0}}" d:Text="103" />
+                                            </StackPanel>
+
+                                            <!-- Series -->
+                                            <StackPanel Orientation="Horizontal" ToolTip="In Series" VerticalAlignment="Center" Margin="16,0,0,0" d:Visibility="Visible"
+                                                       Visibility="{Binding IsInSeries, Mode=OneTime, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}">
+                                                <Rectangle Width="12" Height="12" Fill="DarkGray" Margin="0,0,2,0">
+                                                    <Rectangle.OpacityMask>
+                                                        <ImageBrush ImageSource="/StoryManager;component/Resources/Stack_64x64.png" />
+                                                    </Rectangle.OpacityMask>
+                                                </Rectangle>
+                                                <TextBlock Text="{Binding series_count, Mode=OneTime, FallbackValue=0, StringFormat={}{0:N0}}" d:Text="3" />
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </Grid>
+                                </Button>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </DockPanel>
+        </DockPanel>
+
+        <!-- Topmost dialog content, visible when processing is in progress -->
+        <Grid Visibility="{Binding IsProcessing, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}"
+              d:Visibility="Collapsed">
+            <Rectangle Fill="Black" Opacity="0.35"></Rectangle>
+            <Border HorizontalAlignment="Center" VerticalAlignment="Center" Background="#FFFFFF" Padding="6,3" BorderBrush="Black" BorderThickness="2" MinWidth="250">
+                <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <local:CircularProgressBar RenderTransformOrigin="0.5,0.5" >
+                            <local:CircularProgressBar.LayoutTransform>
+                                <TransformGroup>
+                                    <ScaleTransform ScaleX="0.4" ScaleY="0.4"/>
+                                </TransformGroup>
+                            </local:CircularProgressBar.LayoutTransform>
+                        </local:CircularProgressBar>
+                        <Border Width="6" />
+                        <TextBlock Text="Processing" TextAlignment="Center" FontSize="16" Foreground="Black" TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Center"></TextBlock>
+                    </StackPanel>
+                    <Separator Margin="0,1" />
+                    <TextBlock HorizontalAlignment="Center" Text="{Binding ProcessingText, Mode=OneWay}" TextWrapping="Wrap" FontSize="12" d:Text="Processing Text" />
+                    <Grid Margin="0,8,0,6" d:Visibility="Visible"
+                          Visibility="{Binding IsCancellable, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter},FallbackValue=Collapsed}">
+                        <Button HorizontalAlignment="Center" Content="Stop" Command="{Binding CancelAsync}"
+                                IsEnabled="{Binding IsCancelling, Mode=OneWay, Converter={StaticResource InverseBooleanConverter}}" />
+                    </Grid>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

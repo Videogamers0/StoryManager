@@ -1,0 +1,172 @@
+﻿<Window x:Class="StoryManager.UI.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:StoryManager.UI"
+        xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterScreen"
+        Title="Story Manager" Height="1040" Width="1600" MinWidth="800" MinHeight="450"
+        d:Height="450" d:Width="800">
+
+    <!--<Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/StoryManager;component/UI/App.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+        </ResourceDictionary>
+    </Window.Resources>-->
+
+    <Window.Style>
+        <Style TargetType="{x:Type Window}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Settings.IsDarkMode, Mode=OneWay, FallbackValue=False}" Value="True">
+                    <Setter Property="Background" Value="Black" />
+                    <Setter Property="TextElement.Foreground" Value="White" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Style>
+    <Window.Resources>
+        <!--<Style TargetType="{x:Type Button}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Settings.IsDarkMode, Mode=OneWay, FallbackValue=False}" Value="True">
+                    <Setter Property="Background" Value="Gray" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>-->
+
+        <!--<Style TargetType="{x:Type TextBox}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Settings.IsDarkMode, Mode=OneWay, FallbackValue=False}" Value="True">
+                    <Setter Property="Background" Value="LightGray" />
+                    --><!--<Setter Property="Background" Value="Gray" />
+                    <Setter Property="Foreground" Value="White" />
+                    <Setter Property="CaretBrush" Value="White" />--><!--
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>-->
+
+        <Style TargetType="{x:Type xctk:ColorPicker}">
+            <Setter Property="TextElement.Foreground" Value="Black" />
+        </Style>
+    </Window.Resources>
+
+    <DockPanel>
+        <Border DockPanel.Dock="Bottom" Padding="8,2">
+            <Border.Style>
+                <Style TargetType="{x:Type Border}">
+                    <Setter Property="Background" Value="Black" />
+                    <Setter Property="TextElement.Foreground" Value="White" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Settings.IsDarkMode, Mode=OneWay, FallbackValue=False}" Value="True">
+                            <Setter Property="Background" Value="#FF848484" />
+                            <Setter Property="TextElement.Foreground" Value="Black" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
+            <Grid>
+                <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" Background="#2f000000">
+                    <Hyperlink NavigateUri="https://github.com/Videogamers0" Foreground="CornflowerBlue" RequestNavigate="Hyperlink_RequestNavigate">https://github.com/Videogamers0</Hyperlink>
+                </TextBlock>
+
+                <StackPanel HorizontalAlignment="Right" VerticalAlignment="Center" Orientation="Horizontal">
+                    <ToggleButton Padding="0" IsChecked="{Binding Settings.IsLightMode, Mode=TwoWay, FallbackValue=True}"
+                                  ToolTip="Light mode" ToolTipService.InitialShowDelay="50">
+                        <Image Width="16" Height="16" Source="/Resources/LightMode_64x64.png" />
+                    </ToggleButton>
+                    <ToggleButton Padding="0" IsChecked="{Binding Settings.IsDarkMode, Mode=TwoWay, FallbackValue=False}"
+                                  ToolTip="Dark mode" ToolTipService.InitialShowDelay="50">
+                        <Image Width="16" Height="16" Source="/Resources/DarkMode_64x64.png" />
+                    </ToggleButton>
+                    <Border Width="30" />
+                    <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center">
+                        <Run Text="Version:" />
+                        <Run Text="{Binding VersionString, Mode=OneWay, FallbackValue='1.0.0.0'}" />
+                    </TextBlock>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <Grid Margin="8">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition x:Name="SidebarColumn" Width="260" MinWidth="240" MaxWidth="350" />
+                <ColumnDefinition Width="10" />
+                <ColumnDefinition Width="*" MinWidth="350" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Stories list, sidebar -->
+            <DockPanel Grid.Row="0" Grid.Column="0">
+
+                <Grid DockPanel.Dock="Top" Margin="0,0,0,5">
+                    <Button HorizontalAlignment="Left" VerticalAlignment="Top" Padding="1" Command="{Binding Settings.OpenWindow}"
+                            ToolTip="Settings" ToolTipService.InitialShowDelay="50">
+                        <Image Width="16" Height="16" Source="/Resources/Settings_64x64.png" />
+                    </Button>
+                    <Button Content="Open downloader" Command="{Binding Downloader.OpenWindow}" HorizontalAlignment="Center" Padding="12,1" Margin="0,0,0,5" />
+                </Grid>
+
+                <!-- Selected story details -->
+                <ScrollViewer DockPanel.Dock="Bottom" VerticalScrollBarVisibility="Auto" MaxHeight="200" Margin="0,10,0,0" Padding="2" d:Visibility="Visible"
+                              Visibility="{Binding IsStorySelected, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter},FallbackValue=Collapsed}">
+                    <local:StoryDetails DataContext="{Binding SelectedStory}" />
+                </ScrollViewer>
+
+                <!-- Stories list -->
+                <local:StoriesList />
+            </DockPanel>
+
+            <Grid Grid.Row="0" Grid.Column="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" MinHeight="300" />
+                    <RowDefinition Height="auto" />
+                    <RowDefinition x:Name="SearchRow" Height="auto" />
+                </Grid.RowDefinitions>
+
+                <local:StoryViewer x:Name="StoryViewerControl" Grid.Row="0" Grid.Column="0" />
+
+                <Expander x:Name="SearchExpander" Grid.Row="2" Grid.Column="0" IsExpanded="False" Padding="8,1" Margin="0,3,0,0"
+                          Expanded="SearchExpander_Expanded" Collapsed="SearchExpander_Collapsed">
+                    <Expander.Style>
+                        <Style TargetType="{x:Type Expander}">
+                            <Setter Property="Background" Value="WhiteSmoke" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Settings.IsDarkMode, Mode=OneWay, FallbackValue=False}" Value="True">
+                                    <Setter Property="Background" Value="#FF2F2F2F" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Expander.Style>
+                    <Expander.Header>
+                        <TextBlock Text="Search for new stories:">
+                            <TextBlock.Style>
+                                <Style TargetType="{x:Type TextBlock}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Settings.IsDarkMode, Mode=OneWay, FallbackValue=False}" Value="True">
+                                            <Setter Property="Foreground" Value="White" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </Expander.Header>
+                    <local:SearchContent DataContext="{Binding Searcher, Mode=OneWay}" />
+                </Expander>
+
+                <GridSplitter Grid.Row="1" Grid.Column="0" Height="10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                              Margin="1,0" Background="Transparent" FocusVisualStyle="{x:Null}"
+                              Visibility="{Binding ElementName=SearchExpander, Path=IsExpanded, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            </Grid>
+
+            <GridSplitter Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="1,0" Background="Transparent" FocusVisualStyle="{x:Null}" />
+        </Grid>
+    </DockPanel>
+</Window>

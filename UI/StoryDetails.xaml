@@ -1,0 +1,75 @@
+﻿<UserControl x:Class="StoryManager.UI.StoryDetails"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:StoryManager.UI"
+             mc:Ignorable="d" 
+             d:DesignHeight="200" d:DesignWidth="240">
+    
+    <StackPanel Orientation="Vertical">
+        <!-- Categories and date uploaded -->
+        <DockPanel TextElement.FontSize="10">
+            <ScrollViewer VerticalScrollBarVisibility="Auto" DockPanel.Dock="Left" HorizontalAlignment="Left" MaxHeight="40">
+                <ItemsControl DockPanel.Dock="Left" HorizontalAlignment="Left" ItemsSource="{Binding Categories}" d:ItemsSource="{d:SampleData ItemCount=2}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock>
+                                <Hyperlink NavigateUri="{Binding pageUrl, Mode=OneWay}" RequestNavigate="OpenCategoryInBrowser">
+                                    <Run Text="{Binding pageUrl, Mode=OneWay}" d:Text="category-url" />
+                                </Hyperlink>
+                            </TextBlock>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+
+            <TextBlock DockPanel.Dock="Right" HorizontalAlignment="Right" Text="{Binding DateApprovedString, Mode=OneWay, FallbackValue='&lt;date&gt;'}" />
+        </DockPanel>
+        <Border Height="5" />
+
+        <!-- Title / Main rating (rating from other users, not current user) -->
+        <DockPanel TextElement.FontSize="12" HorizontalAlignment="Center">
+            <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" FontStyle="Italic" Opacity="0.6" Margin="0,0,4,0" d:Visibility="Visible"
+                       Visibility="{Binding HasOverallRating, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter},FallbackValue=Collapsed}">
+                <Run Text="(" /><Run Text="{Binding AverageRating, Mode=OneWay, FallbackValue=0.0, StringFormat={}{0:0.00}}" d:Text="4.56" /><Run Text=")" />
+            </TextBlock>
+            <TextBlock FontSize="12" FontWeight="SemiBold" TextWrapping="Wrap" Text="{Binding Title, Mode=OneWay, FallbackValue='&lt;Title&gt;'}"
+                       d:Text="Story Title" />
+        </DockPanel>
+        <Separator Margin="0,3" />
+
+        <!-- Favorites / User-Rating / Downloaded-date -->
+        <DockPanel>
+            <StackPanel Orientation="Horizontal" DockPanel.Dock="Left" VerticalAlignment="Center">
+                <local:FavoritesToggle VerticalAlignment="Center" IsFavorited="{Binding IsStoryFavorited, Mode=TwoWay}" />
+                <Border Width="5" />
+                <local:RatingControl Width="80" Height="20" Value="{Binding BindableUserRating, Mode=TwoWay, FallbackValue=0}" d:Value="4" />
+            </StackPanel>
+
+            <StackPanel HorizontalAlignment="Right" Orientation="Vertical" VerticalAlignment="Center"
+                        TextElement.FontSize="10" Opacity="0.8">
+                <TextBlock Text="Downloaded:" HorizontalAlignment="Center" />
+                <TextBlock HorizontalAlignment="Right" FontWeight="Bold" Text="{Binding DownloadedAt, Mode=OneWay, FallbackValue='&lt;date&gt;', StringFormat='MM/dd/yyyy h:mmtt'}" />
+            </StackPanel>
+        </DockPanel>
+        <Separator Margin="0,3" />
+        
+        <!-- Description -->
+        <TextBlock FontSize="10" TextWrapping="Wrap" Text="{Binding FullDescription, Mode=OneWay, FallbackValue='&lt;Description&gt;'}"
+                   d:Height="50" />
+        <Separator Margin="0,3" />
+
+        <!-- User-notes -->
+        <StackPanel Orientation="Vertical">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Notes:" VerticalAlignment="Center" />
+                <Border Width="6" />
+                <Image Width="14" Height="14" Source="/Resources/Info_16x16.png" ToolTipService.InitialShowDelay="50"
+                       ToolTip="Place any notes you want, to recall what this story is about" />
+            </StackPanel>
+            <Border Height="2" />
+            <TextBox MinLines="2" MaxLines="4" FontSize="10" Text="{Binding UserNotes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" />
+        </StackPanel>
+    </StackPanel>
+</UserControl>
