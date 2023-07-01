@@ -20,8 +20,8 @@
             <LineBreak/>
             <LineBreak/>
             <Run>If you like this software, please give my</Run>
-            <Hyperlink NavigateUri="https://github.com/Videogamers0" RequestNavigate="Hyperlink_RequestNavigate" 
-                       ToolTip="https://github.com/Videogamers0" ToolTipService.InitialShowDelay="0">
+            <Hyperlink NavigateUri="https://github.com/Videogamers0/StoryManager" RequestNavigate="Hyperlink_RequestNavigate" 
+                       ToolTip="https://github.com/Videogamers0/StoryManager" ToolTipService.InitialShowDelay="0">
                 <Run>github page</Run>
             </Hyperlink>
             <Run>a star so I can roleplay as a popular developer. Thanks!</Run>

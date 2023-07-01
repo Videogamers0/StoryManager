@@ -72,7 +72,7 @@
             </Border.Style>
             <Grid>
                 <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" Background="#2f000000">
-                    <Hyperlink NavigateUri="https://github.com/Videogamers0" Foreground="CornflowerBlue" RequestNavigate="Hyperlink_RequestNavigate">https://github.com/Videogamers0</Hyperlink>
+                    <Hyperlink NavigateUri="https://github.com/Videogamers0/StoryManager" Foreground="CornflowerBlue" RequestNavigate="Hyperlink_RequestNavigate">https://github.com/Videogamers0/StoryManager</Hyperlink>
                 </TextBlock>
 
                 <StackPanel HorizontalAlignment="Right" VerticalAlignment="Center" Orientation="Horizontal">
