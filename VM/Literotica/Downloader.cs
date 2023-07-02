@@ -281,14 +281,23 @@ namespace StoryManager.VM.Literotica
 
         public DelegateCommand<object> GetStoriesFromAuthorUrl => new(async(object o) =>
         {
+            if (!CanGetStoriesFromAuthorUrl)
+                return;
+
             try
             {
-                ProcessingText = AuthorUrl;
-                string Content = await GeneralUtils.ExecuteGetAsync(AuthorUrl);
+                string ActualAuthorUrl;
+                if (int.TryParse(AuthorUrl, out int AuthorId))
+                    ActualAuthorUrl = $"https://www.literotica.com/stories/memberpage.php?uid={AuthorId}&page=submissions";
+                else
+                    ActualAuthorUrl = UrlExtensions.SetUrlParameter(AuthorUrl, "page", "submissions");
+
+                ProcessingText = ActualAuthorUrl;
+                string Content = await GeneralUtils.ExecuteGetAsync(ActualAuthorUrl);
 
                 if (!StoryUrlParser.IsMatch(Content))
                 {
-                    string Message = $"Failed to retrieve stories from author's page at:\n\n{AuthorUrl}" +
+                    string Message = $"Failed to retrieve stories from author's page at:\n\n{ActualAuthorUrl}" +
                         $"\n\nThe author url should be in similar format to this example:" +
                         $"\n\nhttps://www.literotica.com/stories/memberpage.php?uid=1133735&page=submissions";
                     MessageBox.Show(Message);
