@@ -332,7 +332,14 @@ window.scrollTo({{ top: scrollDiv, behavior: 'smooth'}});";
             if (string.IsNullOrEmpty(CommittedSearchQuery))
                 return true;
             else
-                return Story.Title.Contains(CommittedSearchQuery, StringComparison.CurrentCultureIgnoreCase);
+            {
+                return
+                    (SearchStoryTitles && Story.Title.Contains(CommittedSearchQuery, StringComparison.CurrentCultureIgnoreCase)) ||
+                    (SearchChapterTitles && Story.Summary.Chapters.Any(x => x.Title.Contains(CommittedSearchQuery, StringComparison.CurrentCultureIgnoreCase))) ||
+                    (SearchAuthorNames && Story.AuthorName.Contains(CommittedSearchQuery, StringComparison.CurrentCultureIgnoreCase)) ||
+                    (SearchTags && Story.Summary.Chapters.Any(x => x.Tags.Contains(CommittedSearchQuery, StringComparer.CurrentCultureIgnoreCase))) ||
+                    (SearchDescriptions && Story.Summary.Chapters.Any(x => x.Description.Contains(CommittedSearchQuery, StringComparison.CurrentCultureIgnoreCase)));
+            }
         }
 
         private string _SearchQuery;
@@ -365,6 +372,89 @@ window.scrollTo({{ top: scrollDiv, behavior: 'smooth'}});";
         }
 
         public DelegateCommand<object> CommitSearch => new(_ => CommittedSearchQuery = SearchQuery);
+
+        #region Settings
+        private void HandleSearchSettingChanged()
+        {
+            if (!string.IsNullOrEmpty(CommittedSearchQuery))
+                UpdateStoryVisibilities();
+        }
+
+        private bool _SearchStoryTitles;
+        public bool SearchStoryTitles
+        {
+            get => _SearchStoryTitles;
+            set
+            {
+                if (_SearchStoryTitles != value)
+                {
+                    _SearchStoryTitles = value;
+                    NPC(nameof(SearchStoryTitles));
+                    HandleSearchSettingChanged();
+                }
+            }
+        }
+
+        private bool _SearchChapterTitles;
+        public bool SearchChapterTitles
+        {
+            get => _SearchChapterTitles;
+            set
+            {
+                if (_SearchChapterTitles != value)
+                {
+                    _SearchChapterTitles = value;
+                    NPC(nameof(SearchChapterTitles));
+                    HandleSearchSettingChanged();
+                }
+            }
+        }
+
+        private bool _SearchAuthorNames;
+        public bool SearchAuthorNames
+        {
+            get => _SearchAuthorNames;
+            set
+            {
+                if (_SearchAuthorNames != value)
+                {
+                    _SearchAuthorNames = value;
+                    NPC(nameof(SearchAuthorNames));
+                    HandleSearchSettingChanged();
+                }
+            }
+        }
+
+        private bool _SearchTags;
+        public bool SearchTags
+        {
+            get => _SearchTags;
+            set
+            {
+                if (_SearchTags != value)
+                {
+                    _SearchTags = value;
+                    NPC(nameof(SearchTags));
+                    HandleSearchSettingChanged();
+                }
+            }
+        }
+
+        private bool _SearchDescriptions;
+        public bool SearchDescriptions
+        {
+            get => _SearchDescriptions;
+            set
+            {
+                if (_SearchDescriptions != value)
+                {
+                    _SearchDescriptions = value;
+                    NPC(nameof(SearchDescriptions));
+                    HandleSearchSettingChanged();
+                }
+            }
+        }
+        #endregion Settings
         #endregion Searching
 
         public MainViewModel(MainWindow Window)
@@ -503,6 +593,12 @@ window.scrollTo({{ top: scrollDiv, behavior: 'smooth'}});";
             Settings.GroupAllByAuthorChanged += (sender, value) => UpdateSortingAndGrouping(SortedStories, value);
             UpdateSortingAndGrouping(FavoritedStories, Settings.GroupFavoritesByAuthor);
             Settings.GroupFavoritesByAuthorChanged += (sender, value) => UpdateSortingAndGrouping(FavoritedStories, value);
+
+            SearchStoryTitles = true;
+            SearchChapterTitles = true;
+            SearchDescriptions = true;
+            SearchAuthorNames = true;
+            SearchTags = true;
 
             async void HandleWindowClosing(object sender, CancelEventArgs e)
             {

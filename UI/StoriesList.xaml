@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:StoryManager.UI"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
              mc:Ignorable="d" 
              d:DesignHeight="200" d:DesignWidth="250">
 
@@ -287,11 +288,26 @@
                         <Button DockPanel.Dock="Left" Padding="2" Command="{Binding CommitSearch}">
                             <Image Width="16" Height="16" Source="/Resources/Search_64x64.png" />
                         </Button>
-                        <xctk:DropDownButton DockPanel.Dock="Right" Padding="2" ToolTip="Search settings" Visibility="Collapsed">
+                        <xctk:DropDownButton DockPanel.Dock="Right" Padding="2" ToolTip="Search settings">
                             <xctk:DropDownButton.DropDownContent>
                                 <Border Background="White" BorderBrush="Black" BorderThickness="1" Padding="8" TextElement.Foreground="Black">
-                                    <!-- TODO -->
-                                    <!-- Settings to search by story title, chapter title, tags of each chapter, description of each chapter, author name, category (categoryinfo.pageUrl) -->
+                                    <GroupBox BorderBrush="Gray" BorderThickness="1" Padding="8" Header="Searched content:">
+                                        <StackPanel Orientation="Vertical">
+                                            <StackPanel.Resources>
+                                                <sys:Double x:Key="RowPadding">4</sys:Double>
+                                            </StackPanel.Resources>
+
+                                            <CheckBox Content="Story Title" IsChecked="{Binding SearchStoryTitles, Mode=TwoWay}" />
+                                            <Border Height="{StaticResource RowPadding}" />
+                                            <CheckBox Content="Chapter Titles" IsChecked="{Binding SearchChapterTitles, Mode=TwoWay}" />
+                                            <Border Height="{StaticResource RowPadding}" />
+                                            <CheckBox Content="Author Name" IsChecked="{Binding SearchAuthorNames, Mode=TwoWay}" />
+                                            <Border Height="{StaticResource RowPadding}" />
+                                            <CheckBox Content="Tags" IsChecked="{Binding SearchTags, Mode=TwoWay}" />
+                                            <Border Height="{StaticResource RowPadding}" />
+                                            <CheckBox Content="Description" IsChecked="{Binding SearchDescriptions, Mode=TwoWay}" />
+                                        </StackPanel>
+                                    </GroupBox>
                                 </Border>
                             </xctk:DropDownButton.DropDownContent>
                             <Image Width="16" Height="16" Source="/Resources/Settings_64x64.png" />
