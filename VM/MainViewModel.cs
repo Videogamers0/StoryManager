@@ -488,6 +488,9 @@ window.scrollTo({{ top: scrollDiv, behavior: 'smooth'}});";
         {
             try
             {
+                if (!Story.IsSaved)
+                    return;
+
                 string Message = $"Are you sure you want to permanently delete this story:\n\n{Story.Title} by {Story.AuthorName}\n\n" +
                     $"All downloaded files for this story will be deleted, and all metadata (such as user rating, is-favorited, is-read/unread) will be lost.";
                 MessageBoxResult Answer = MessageBox.Show(Window, Message, "Confirm Deletion", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
@@ -527,7 +530,7 @@ window.scrollTo({{ top: scrollDiv, behavior: 'smooth'}});";
             Stopwatch sw = Stopwatch.StartNew();
 
             Dictionary<string, SerializableStory> CachedStories = Settings.PreviousSessionSettings.StoryMetadata
-                .ToDictionary(x => GetStoryUniqueKey(GeneralUtils.ToSafeFilename(x.Author.username), GeneralUtils.ToSafeFilename(x.Title)));
+                .DistinctBy(x => GetStoryUniqueKey(x.Author.username, x.Title)).ToDictionary(x => GetStoryUniqueKey(GeneralUtils.ToSafeFilename(x.Author.username), GeneralUtils.ToSafeFilename(x.Title)));
 
             string BaseFolder = Settings.StoriesDirectory;
 

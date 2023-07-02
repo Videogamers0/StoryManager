@@ -74,7 +74,8 @@
                                   ToolTip="Ignored stories are still stored locally on your computed, but can be hidden using the filter settings above this list"
                                   Visibility="{Binding IsIgnored, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}" />
                         
-                        <MenuItem Header="Delete story" Command="{Binding Delete}" />
+                        <MenuItem Header="Delete story" Command="{Binding Delete}"
+                                  Visibility="{Binding IsSaved, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}" />
                     </ContextMenu>
                 </Setter.Value>
             </Setter>

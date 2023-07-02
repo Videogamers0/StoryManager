@@ -380,7 +380,7 @@ namespace StoryManager.VM
             StoriesDirectory = PreviousSessionSettings.StoriesBaseFolder ?? DefaultStoriesDirectory;
 
             AuthorSettingsByName = PreviousSessionSettings.AuthorSettings.ToDictionary(x => x.Author);
-            StorySettingsByAuthorAndTitle = PreviousSessionSettings.StorySettings.ToDictionary(x => MainViewModel.GetStoryUniqueKey(x.Author, x.Title));
+            StorySettingsByAuthorAndTitle = PreviousSessionSettings.StorySettings.DistinctBy(x => MainViewModel.GetStoryUniqueKey(x.Author, x.Title)).ToDictionary(x => MainViewModel.GetStoryUniqueKey(x.Author, x.Title));
 
             HistorySize = PreviousSessionSettings.HistorySize ?? DefaultHistorySize;
 
