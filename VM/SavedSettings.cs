@@ -90,6 +90,9 @@ namespace StoryManager
         [DataMember(Name = "ShowDateDownloaded")]
         public bool ShowDateDownloaded { get; set; }
 
+        [DataMember(Name = "SaveAfterDownloading")]
+        public bool SaveAfterDownloading { get; set; }
+
         public SavedSettings()
         {
             InitializeDefaults();
@@ -136,6 +139,8 @@ namespace StoryManager
             ShowOverallRating = false;
             ShowUserRating = false;
             ShowDateDownloaded = false;
+
+            SaveAfterDownloading = true;
         }
 
         public int GetFontSize(int DefaultValue) => FontSize ?? DefaultValue;

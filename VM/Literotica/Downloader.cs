@@ -220,7 +220,7 @@ namespace StoryManager.VM.Literotica
         {
             this.MVM = MVM;
 
-            this.SaveAfterDownloading = true;
+            SaveAfterDownloading = MVM.Settings.PreviousSessionSettings.SaveAfterDownloading;
 
             //  Monitor for changes to the Clipboard text
             ClipboardUrl = System.Windows.Forms.Clipboard.GetText()?.Trim();
@@ -277,7 +277,7 @@ namespace StoryManager.VM.Literotica
 
         void Story_CheckStateChangedHandler(object sender, bool isChecked) => CheckedStoriesCount += isChecked ? 1 : -1;
 
-        private bool IsAlreadyDownloaded(string Url) => LiteroticaUtils.TryGetStoryTitle(Url, out string ChapterTitle) && MVM.TryGetStory(ChapterTitle, out LiteroticaStory StoryVM);
+        private bool IsAlreadyDownloaded(string Url) => LiteroticaUtils.TryGetStoryTitle(Url, out string ChapterTitle) && TryGetStory(ChapterTitle, out _);
 
         public DelegateCommand<object> GetStoriesFromAuthorUrl => new(async(object o) =>
         {

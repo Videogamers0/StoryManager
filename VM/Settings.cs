@@ -467,6 +467,8 @@ namespace StoryManager.VM
                 ShowOverallRating = DisplaySettings.ShowOverallRating,
                 ShowUserRating = DisplaySettings.ShowUserRating,
                 ShowDateDownloaded = DisplaySettings.ShowDateDownloaded,
+
+                SaveAfterDownloading = MVM.Downloader.SaveAfterDownloading
             };
             Settings.Save();
 
