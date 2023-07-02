@@ -366,6 +366,20 @@ namespace StoryManager.VM
             }
         }
 
+        private bool _WarnIfClosingUnsavedStory;
+        public bool WarnIfClosingUnsavedStory
+        {
+            get => _WarnIfClosingUnsavedStory;
+            set
+            {
+                if (_WarnIfClosingUnsavedStory != value)
+                {
+                    _WarnIfClosingUnsavedStory = value;
+                    NPC(nameof(WarnIfClosingUnsavedStory));
+                }
+            }
+        }
+
         public event EventHandler<bool> GroupFavoritesByAuthorChanged;
 
         public Settings(MainViewModel MVM)
@@ -386,6 +400,8 @@ namespace StoryManager.VM
 
             GroupAllByAuthor = PreviousSessionSettings.GroupAllByAuthor;
             GroupFavoritesByAuthor = PreviousSessionSettings.GroupFavoritesByAuthor;
+
+            WarnIfClosingUnsavedStory = PreviousSessionSettings.WarnIfClosingUnsavedStory;
 
             _ = SetThemeAsync(PreviousSessionSettings.Theme, true, false);
 
@@ -468,7 +484,9 @@ namespace StoryManager.VM
                 ShowUserRating = DisplaySettings.ShowUserRating,
                 ShowDateDownloaded = DisplaySettings.ShowDateDownloaded,
 
-                SaveAfterDownloading = MVM.Downloader.SaveAfterDownloading
+                SaveAfterDownloading = MVM.Downloader.SaveAfterDownloading,
+
+                WarnIfClosingUnsavedStory = WarnIfClosingUnsavedStory
             };
             Settings.Save();
 

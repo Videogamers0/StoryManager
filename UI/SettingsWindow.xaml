@@ -90,6 +90,18 @@
 
                 <Border Height="{StaticResource RowPadding}" />
 
+                <CheckBox Content="Warn if closing unsaved story" IsChecked="{Binding WarnIfClosingUnsavedStory, Mode=TwoWay}">
+                    <CheckBox.ToolTip>
+                        <TextBlock>
+                            If checked, you will receive a warning when you attempt to load another story while the current story is unsaved.
+                            <LineBreak/>
+                            The warning dialog prompts you to either save the unsaved story or continue without saving.
+                        </TextBlock>
+                    </CheckBox.ToolTip>
+                </CheckBox>
+
+                <Border Height="{StaticResource RowPadding}" />
+
                 <GroupBox Header="App Theme:">
                     <StackPanel Orientation="Horizontal">
                         <ToggleButton Padding="4,2" IsChecked="{Binding IsLightMode, Mode=TwoWay, FallbackValue=True}">

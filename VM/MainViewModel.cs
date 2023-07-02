@@ -185,7 +185,7 @@ css_getclass('.highlight').style.background=""""{{GetRGBAHexString(ForegroundCol
         private readonly List<LiteroticaStory> UnsavedWarningExclusions = new();
         private void TryWarnIfUnsavedStory(LiteroticaStory Story)
         {
-            if (Story?.IsSaved == false && !UnsavedWarningExclusions.Contains(Story))
+            if (Settings.WarnIfClosingUnsavedStory && Story?.IsSaved == false && !UnsavedWarningExclusions.Contains(Story))
             {
                 string Msg = $"Story \"{Story.Title} by {Story.AuthorName}\" is unsaved.\n\nDo you want to save it?";
                 MessageBoxResult Choice = MessageBox.Show(Window, Msg, "Unsaved story", MessageBoxButton.YesNo, MessageBoxImage.Question);

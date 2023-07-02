@@ -93,6 +93,9 @@ namespace StoryManager
         [DataMember(Name = "SaveAfterDownloading")]
         public bool SaveAfterDownloading { get; set; }
 
+        [DataMember(Name = "WarnIfClosingUnsavedStory")]
+        public bool WarnIfClosingUnsavedStory { get; set; }
+
         public SavedSettings()
         {
             InitializeDefaults();
@@ -141,6 +144,8 @@ namespace StoryManager
             ShowDateDownloaded = false;
 
             SaveAfterDownloading = true;
+
+            WarnIfClosingUnsavedStory = true;
         }
 
         public int GetFontSize(int DefaultValue) => FontSize ?? DefaultValue;
