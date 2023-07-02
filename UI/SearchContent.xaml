@@ -94,50 +94,47 @@
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <Button BorderBrush="DarkGray" BorderThickness="1" Background="White" Margin="0,2" Padding="10,5" HorizontalContentAlignment="Stretch"
+                                <Button BorderThickness="1" Margin="0,2" Padding="10,5" HorizontalContentAlignment="Stretch"
                                         Command="{Binding ElementName=ResultsList, Path=DataContext.OpenStory}" CommandParameter="{Binding}">
-                                    <Grid>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="auto" />
-                                            <RowDefinition Height="auto" />
-                                            <RowDefinition Height="auto" />
-                                            <RowDefinition Height="auto" />
-                                        </Grid.RowDefinitions>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*" />
-                                        </Grid.ColumnDefinitions>
-
-                                        <!-- Title -->
-                                        <TextBlock Grid.Row="0" Grid.Column="0" FontSize="14" FontWeight="SemiBold" TextDecorations="Underline">
-                                        <Hyperlink RequestNavigate="Hyperlink_RequestNavigate"
-                                                   NavigateUri="{Binding url, Mode=OneTime, Converter={StaticResource LiteroticaStoryUriConverter}}">
-                                            <Run Text="{Binding title, Mode=OneTime, FallbackValue=Title}" d:Text="Story Title" />
-                                        </Hyperlink>
-                                        </TextBlock>
-
-                                        <!-- Description -->
-                                        <TextBlock Grid.Row="1" Grid.Column="0" FontSize="12" TextWrapping="Wrap" 
-                                                   Text="{Binding description, Mode=OneTime, FallbackValue=Description}" d:Text="Story Description." />
-
-                                        <!-- Author / Category / Approval_Date -->
-                                        <DockPanel Grid.Row="2" Grid.Column="0" TextElement.FontSize="10">
-                                            <TextBlock DockPanel.Dock="Right">
-                                                <Hyperlink RequestNavigate="Hyperlink_RequestNavigate"
-                                                           NavigateUri="{Binding category_info.pageUrl, Mode=OneTime, Converter={StaticResource LiteroticaCategoryUriConverter}}">
-                                                    <Run Text="{Binding category_info.pageUrl, Mode=OneTime, FallbackValue='Category Name'}" d:Text="Category Name" />
-                                                </Hyperlink>
-                                                <Run Text="{Binding date_approve, Mode=OneTime, FallbackValue='Approval Date'}" d:Text="01/01/2023" />
-                                            </TextBlock>
-                                            <TextBlock>
-                                                <Run Text="by" />
-                                                <Hyperlink RequestNavigate="Hyperlink_RequestNavigate"
-                                                           NavigateUri="{Binding author.userid, Mode=OneTime, Converter={StaticResource LiteroticaAuthorUriConverter}}">
-                                                    <Run Text="{Binding authorname, Mode=OneTime, FallbackValue=Author}" d:Text="Author" />
-                                                </Hyperlink>
-                                            </TextBlock>
-                                        </DockPanel>
-
-                                        <StackPanel Grid.Row="3" Grid.Column="0" Orientation="Horizontal" Margin="0,4,0,0" TextElement.FontSize="10" TextElement.Foreground="Gray">
+                                    <Button.Style>
+                                        <Style TargetType="{x:Type Button}">
+                                            <Setter Property="BorderBrush" Value="Gray" />
+                                            <Setter Property="Background" Value="White" />
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="{x:Type Button}">
+                                                        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
+                                                                Padding="{TemplateBinding Padding}" Margin="{TemplateBinding Margin}" SnapsToDevicePixels="True">
+                                                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                                                        </Border>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding ElementName=ResultsScroller, Path=DataContext.MVM.Settings.IsDarkMode, Mode=OneWay}" Value="True">
+                                                    <Setter Property="BorderBrush" Value="#FF5D5D5D" />
+                                                    <Setter Property="Background" Value="#FF151414" />
+                                                    <Setter Property="TextElement.Foreground" Value="White" />
+                                                </DataTrigger>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="#8FA5D8FF"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                    <DockPanel>
+                                        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Margin="0,4,0,0" TextElement.FontSize="10">
+                                            <StackPanel.Style>
+                                                <Style TargetType="{x:Type StackPanel}">
+                                                    <Setter Property="TextElement.Foreground" Value="Gray" />
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding ElementName=ResultsScroller, Path=DataContext.MVM.Settings.IsDarkMode, Mode=OneWay}" Value="True">
+                                                            <Setter Property="TextElement.Foreground" Value="#FFC1C1C1" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </StackPanel.Style>
+                                            
                                             <!-- IsHot -->
                                             <TextBlock VerticalAlignment="Center" Padding="3,0" Foreground="White" Background="Red"
                                                        Text="H" FontWeight="SemiBold" FontSize="9" ToolTip="Hot" Margin="0,0,16,0" d:Visibility="Visible"
@@ -202,7 +199,48 @@
                                                 <TextBlock Text="{Binding series_count, Mode=OneTime, FallbackValue=0, StringFormat={}{0:N0}}" d:Text="3" />
                                             </StackPanel>
                                         </StackPanel>
-                                    </Grid>
+
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="auto" />
+                                                <RowDefinition Height="auto" />
+                                                <RowDefinition Height="auto" />
+                                            </Grid.RowDefinitions>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <!-- Title -->
+                                            <TextBlock Grid.Row="0" Grid.Column="0" FontSize="14" FontWeight="SemiBold" TextDecorations="Underline">
+                                                <Hyperlink RequestNavigate="Hyperlink_RequestNavigate"
+                                                           NavigateUri="{Binding url, Mode=OneTime, Converter={StaticResource LiteroticaStoryUriConverter}}">
+                                                    <Run Text="{Binding title, Mode=OneTime, FallbackValue=Title}" d:Text="Story Title" />
+                                                </Hyperlink>
+                                            </TextBlock>
+
+                                            <!-- Description -->
+                                            <TextBlock Grid.Row="1" Grid.Column="0" FontSize="12" TextWrapping="Wrap" 
+                                                       Text="{Binding description, Mode=OneTime, FallbackValue=Description}" d:Text="Story Description." />
+
+                                            <!-- Author / Category / Approval_Date -->
+                                            <DockPanel Grid.Row="2" Grid.Column="0" TextElement.FontSize="10">
+                                                <TextBlock DockPanel.Dock="Right">
+                                                    <Hyperlink RequestNavigate="Hyperlink_RequestNavigate"
+                                                               NavigateUri="{Binding category_info.pageUrl, Mode=OneTime, Converter={StaticResource LiteroticaCategoryUriConverter}}">
+                                                        <Run Text="{Binding category_info.pageUrl, Mode=OneTime, FallbackValue='Category Name'}" d:Text="Category Name" />
+                                                    </Hyperlink>
+                                                    <Run Text="{Binding date_approve, Mode=OneTime, FallbackValue='Approval Date'}" d:Text="01/01/2023" />
+                                                </TextBlock>
+                                                <TextBlock>
+                                                    <Run Text="by" />
+                                                    <Hyperlink RequestNavigate="Hyperlink_RequestNavigate"
+                                                               NavigateUri="{Binding author.userid, Mode=OneTime, Converter={StaticResource LiteroticaAuthorUriConverter}}">
+                                                        <Run Text="{Binding authorname, Mode=OneTime, FallbackValue=Author}" d:Text="Author" />
+                                                    </Hyperlink>
+                                                </TextBlock>
+                                            </DockPanel>
+                                        </Grid>
+                                    </DockPanel>
                                 </Button>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>

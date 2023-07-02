@@ -334,7 +334,8 @@ namespace StoryManager.VM.Literotica
                 (!Settings.FilterByRating || (UserRating.HasValue && UserRating.Value >= Settings.MinRating && UserRating.Value <= Settings.MaxRating)) &&
                 (!Settings.FilterByWordCount || (WordCount >= Settings.MinWordCount && WordCount <= Settings.MaxWordCount)) &&
                 (!Settings.FilterByApprovalDate || !Settings.MinApprovalDate.HasValue || !DateApproved.HasValue || DateApproved.Value >= Settings.MinApprovalDate.Value) &&
-                (!Settings.FilterByDownloadDate || !Settings.MinDownloadDate.HasValue || DownloadedAt >= Settings.MinDownloadDate.Value);
+                (!Settings.FilterByDownloadDate || !Settings.MinDownloadDate.HasValue || DownloadedAt >= Settings.MinDownloadDate.Value) &&
+                MVM.IsSearchMatch(this);
         }
 
         /// <param name="FolderPath">The local folder path where this story is saved, or null if this story has not been saved locally.</param>

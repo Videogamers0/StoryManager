@@ -6,9 +6,6 @@
 - Additional settings to change sorting?
     Sort groupbox: List of options, can drag/drop to re-order
         A-Z, Download Date, Authored Date, Last Viewed, Your Rating etc
-- Search box above the stories list, with a togglebutton to isolate search matches (otherwise just highlights them)
-    Can search for stories based on the titles of their chapters, or the title of the entire story
-    Can also search by tags (of each chapter), category (categoryinfo.pageUrl), author name, notes, chapter descriptions etc
 - Custom bookmarks
     Click a button 'Save bookmark' (use the same icon that Literotica uses for bookmarks) to store the current scroll offset as a numbered bookmark for the selected story
     Bookmarks are auto-deleted / un-loadable if they were created with a different WebView2 width, 
@@ -18,3 +15,4 @@
     such as clicking the Title to open story in browser since the base address would be different
     Could also have 2-tabbed UI. Tab #1: Literotica. Tab #2: Other
     Other tab would be a simplified copy of the code used for the Literotica tab.
+- Story filter settings could have a checkbox list of categories to show/hide

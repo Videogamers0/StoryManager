@@ -182,24 +182,39 @@
             <!-- See also: https://stackoverflow.com/a/3011814 -->
             <EventSetter Event="PreviewMouseRightButtonDown" Handler="SwallowMouseEvent" />
             <!--<Setter Property="Background" Value="Transparent" />-->
-            <!--<Style.Triggers>
+            <Style.Triggers>
                 <DataTrigger Binding="{Binding Settings.IsDarkMode, Mode=OneWay, FallbackValue=False}" Value="True">
                     <Setter Property="Background" Value="#FF272424" />
-                    <Setter Property="TextElement.Foreground" Value="White" />
                 </DataTrigger>
-            </Style.Triggers>-->
+            </Style.Triggers>
+        </Style>
+
+        <Style TargetType="{x:Type TextBlock}" x:Key="AuthorNameStyle">
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Foreground" Value="#0000DF" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:StoriesList}}, Path=DataContext.Settings.IsDarkMode, Mode=OneWay, FallbackValue=False}" Value="True">
+                    <Setter Property="Foreground" Value="#FF6969FF" />
+                </DataTrigger>
+            </Style.Triggers>
         </Style>
 
         <Style TargetType="{x:Type GroupItem}" x:Key="AuthorGroupingStyle">
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate>
-                        <GroupBox Margin="2" BorderBrush="Black" BorderThickness="1">
+                        <GroupBox Margin="2" BorderThickness="1">
                             <GroupBox.Style>
                                 <Style TargetType="{x:Type GroupBox}">
+                                    <Setter Property="BorderBrush" Value="Black" />
                                     <Style.Triggers>
+                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:StoriesList}}, Path=DataContext.Settings.IsDarkMode, Mode=OneWay, FallbackValue=False}" Value="True">
+                                            <Setter Property="BorderBrush" Value="White" />
+                                        </DataTrigger>
                                         <DataTrigger Binding="{Binding Name.IsSelected, Mode=OneWay}" Value="True">
-                                            <Setter Property="Background" Value="#8fadd8e6" />
+                                            <Setter Property="Background" Value="#6fadd8e6" />
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
@@ -217,9 +232,17 @@
 
                                             <local:FavoritesToggle VerticalAlignment="Center" Margin="0,0,5,0" ShowIfUnfavorited="True" DataContext="{Binding Name}"
                                                                    IsFavorited="{Binding IsFavorited, Mode=TwoWay}" />
-                                            <TextBlock Text="{Binding Name.AuthorName}" TextWrapping="Wrap" Margin="0,0,5,0" 
-                                                       FontWeight="SemiBold" FontSize="12" Foreground="#0000DF" />
+                                            <TextBlock Style="{StaticResource AuthorNameStyle}" Margin="0,0,5,0" Text="{Binding Name.AuthorName}" />
                                             <TextBlock TextWrapping="Wrap" VerticalAlignment="Bottom" FontStyle="Italic">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="{x:Type TextBlock}">
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:StoriesList}}, Path=DataContext.Settings.IsDarkMode, Mode=OneWay, FallbackValue=False}" Value="True">
+                                                                <Setter Property="Foreground" Value="White" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
                                                 <Run Text="(" /><Run Text="{Binding ItemCount, Mode=OneWay}" /><Run Text=")" />
                                             </TextBlock>
                                         </WrapPanel>
@@ -259,12 +282,34 @@
                     <TextBlock Text="All" Padding="5,0" />
                 </TabItem.Header>
 
-                <ListBox Style="{StaticResource StoryListStyle}" VerticalAlignment="Top" Margin="0,4,0,0" IsSynchronizedWithCurrentItem="False"
-                         ItemsSource="{Binding SortedStories}" SelectedItem="{Binding BindableSelectedStory, Mode=TwoWay}" d:ItemsSource="{d:SampleData ItemCount=8}">
-                    <ListBox.GroupStyle>
-                        <GroupStyle ContainerStyle="{StaticResource AuthorGroupingStyle}" />
-                    </ListBox.GroupStyle>
-                </ListBox>
+                <DockPanel>
+                    <DockPanel DockPanel.Dock="Top" Margin="3,5,3,3">
+                        <Button DockPanel.Dock="Left" Padding="2" Command="{Binding CommitSearch}">
+                            <Image Width="16" Height="16" Source="/Resources/Search_64x64.png" />
+                        </Button>
+                        <xctk:DropDownButton DockPanel.Dock="Right" Padding="2" ToolTip="Search settings" Visibility="Collapsed">
+                            <xctk:DropDownButton.DropDownContent>
+                                <Border Background="White" BorderBrush="Black" BorderThickness="1" Padding="8" TextElement.Foreground="Black">
+                                    <!-- TODO -->
+                                    <!-- Settings to search by story title, chapter title, tags of each chapter, description of each chapter, author name, category (categoryinfo.pageUrl) -->
+                                </Border>
+                            </xctk:DropDownButton.DropDownContent>
+                            <Image Width="16" Height="16" Source="/Resources/Settings_64x64.png" />
+                        </xctk:DropDownButton>
+                        <TextBox Padding="6,2" Text="{Binding SearchQuery, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                            <TextBox.InputBindings>
+                                <KeyBinding Command="{Binding CommitSearch}" Key="Enter" />
+                            </TextBox.InputBindings>
+                        </TextBox>
+                    </DockPanel>
+
+                    <ListBox Style="{StaticResource StoryListStyle}" VerticalAlignment="Top" IsSynchronizedWithCurrentItem="False" BorderThickness="0"
+                             ItemsSource="{Binding SortedStories}" SelectedItem="{Binding BindableSelectedStory, Mode=TwoWay}" d:ItemsSource="{d:SampleData ItemCount=8}">
+                        <ListBox.GroupStyle>
+                            <GroupStyle ContainerStyle="{StaticResource AuthorGroupingStyle}" />
+                        </ListBox.GroupStyle>
+                    </ListBox>
+                </DockPanel>
             </TabItem>
 
             <TabItem Header="Favorites">

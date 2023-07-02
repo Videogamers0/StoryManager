@@ -326,6 +326,47 @@ window.scrollTo({{ top: scrollDiv, behavior: 'smooth'}});";
         public Downloader Downloader { get; }
         public StorySearcher Searcher { get; }
 
+        #region Searching
+        public bool IsSearchMatch(LiteroticaStory Story)
+        {
+            if (string.IsNullOrEmpty(CommittedSearchQuery))
+                return true;
+            else
+                return Story.Title.Contains(CommittedSearchQuery, StringComparison.CurrentCultureIgnoreCase);
+        }
+
+        private string _SearchQuery;
+        public string SearchQuery
+        {
+            get => _SearchQuery;
+            set
+            {
+                if (_SearchQuery != value)
+                {
+                    _SearchQuery = value;
+                    NPC(nameof(SearchQuery));
+                }
+            }
+        }
+
+        private string _CommittedSearchQuery;
+        public string CommittedSearchQuery
+        {
+            get => _CommittedSearchQuery;
+            private set
+            {
+                if (_CommittedSearchQuery != value)
+                {
+                    _CommittedSearchQuery = value;
+                    NPC(nameof(CommittedSearchQuery));
+                    UpdateStoryVisibilities();
+                }
+            }
+        }
+
+        public DelegateCommand<object> CommitSearch => new(_ => CommittedSearchQuery = SearchQuery);
+        #endregion Searching
+
         public MainViewModel(MainWindow Window)
         {
             this.Window = Window;
