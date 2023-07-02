@@ -206,7 +206,7 @@ namespace StoryManager.VM.Literotica
                         StoriesByChapterTitle[Chapter.Url] = StoryVM;
                 }
 
-                await MVM.SetSelectedStoryAsync(StoryVM, true);
+                await MVM.SetSelectedStoryAsync(StoryVM, true, true);
             }
             catch (Exception ex) { MessageBox.Show(ex.ToString()); }
             finally

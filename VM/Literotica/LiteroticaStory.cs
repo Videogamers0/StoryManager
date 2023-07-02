@@ -374,7 +374,8 @@ namespace StoryManager.VM.Literotica
             UpdateVisibility();
         }
 
-        public DelegateCommand<object> SaveLocal => new(_ => Save(Downloader.GetLocalFolder(MVM.Settings.StoriesDirectory, Story)));
+        public DelegateCommand<object> SaveLocal => new(_ => SaveToDefaultFolder());
+        public void SaveToDefaultFolder() => Save(Downloader.GetLocalFolder(MVM.Settings.StoriesDirectory, Story));
         public void Save(string Folder)
         {
             if (!IsSaved)

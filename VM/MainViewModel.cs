@@ -156,7 +156,7 @@ css_getclass('.highlight').style.background=""""{{GetRGBAHexString(ForegroundCol
             {
                 if (SelectedStory != null)
                     ForwardHistory.Push(SelectedStory);
-                _ = SetSelectedStoryAsync(Story, false);
+                _ = SetSelectedStoryAsync(Story, false, true);
             }
         });
         public DelegateCommand<object> NavigateStoryForward => new(_ =>
@@ -165,7 +165,7 @@ css_getclass('.highlight').style.background=""""{{GetRGBAHexString(ForegroundCol
             {
                 if (SelectedStory != null)
                     BackHistory.Push(SelectedStory);
-                _ = SetSelectedStoryAsync(Story, false);
+                _ = SetSelectedStoryAsync(Story, false, true);
             }
         });
 
@@ -178,18 +178,34 @@ css_getclass('.highlight').style.background=""""{{GetRGBAHexString(ForegroundCol
             set
             {
                 if (value != null)
-                    _ = SetSelectedStoryAsync(value, true);
+                    _ = SetSelectedStoryAsync(value, true, true);
+            }
+        }
+
+        private readonly List<LiteroticaStory> UnsavedWarningExclusions = new();
+        private void TryWarnIfUnsavedStory(LiteroticaStory Story)
+        {
+            if (Story?.IsSaved == false && !UnsavedWarningExclusions.Contains(Story))
+            {
+                string Msg = $"Story \"{Story.Title} by {Story.AuthorName}\" is unsaved.\n\nDo you want to save it?";
+                MessageBoxResult Choice = MessageBox.Show(Window, Msg, "Unsaved story", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                if (Choice == MessageBoxResult.Yes)
+                    Story.SaveToDefaultFolder();
+                UnsavedWarningExclusions.Add(Story);
             }
         }
 
         private LiteroticaStory _SelectedStory;
         public LiteroticaStory SelectedStory => _SelectedStory;
         /// <param name="UpdateNavigationHistory">If <seealso langword="true"/>, the current story will be added to <see cref="BackHistory"/> and the <see cref="ForwardHistory"/> will be cleared.</param>
-        public async Task SetSelectedStoryAsync(LiteroticaStory Value, bool UpdateNavigationHistory)
+        public async Task SetSelectedStoryAsync(LiteroticaStory Value, bool UpdateNavigationHistory, bool WarnIfUnsaved)
         {
             if (SelectedStory != Value)
             {
                 LiteroticaStory Previous = SelectedStory;
+                if (WarnIfUnsaved)
+                    TryWarnIfUnsavedStory(Previous);
+
                 _SelectedStory = Value;
                 NPC(nameof(SelectedStory));
                 NPC(nameof(BindableSelectedStory));
@@ -452,6 +468,7 @@ window.scrollTo({{ top: scrollDiv, behavior: 'smooth'}});";
                 Window.Closing -= HandleWindowClosing;
                 e.Cancel = true;
                 Window.IsEnabled = false;
+                TryWarnIfUnsavedStory(SelectedStory);
                 await Settings.SaveAsync(true);
                 // In rare cases, Settings.SaveAsync executes synchronously, which causes Window.Close() to fail because the initial Window.Closing event is still invoking
                 await Task.Delay(TimeSpan.FromMilliseconds(5));
@@ -499,7 +516,7 @@ window.scrollTo({{ top: scrollDiv, behavior: 'smooth'}});";
                     foreach (SerializableChapter Chapter in Story.Summary.Chapters)
                         StoriesByChapterTitle.Remove(Chapter.Url);
 
-                    RecentStories.Remove(Story);
+                    //RecentStories.Remove(Story);
                     Stories.Remove(Story);
 
                     string StoryFolder = Story.FolderPath;
@@ -519,7 +536,9 @@ window.scrollTo({{ top: scrollDiv, behavior: 'smooth'}});";
                     if (Directory.Exists(AuthorFolder) && IsDirectoryEmpty(AuthorFolder))
                         FileSystem.DeleteDirectory(AuthorFolder, DeleteDirectoryOption.ThrowIfDirectoryNonEmpty);
 
-                    await SetSelectedStoryAsync(RecentStories.FirstOrDefault() ?? Stories.FirstOrDefault(), false);
+                    Story.FolderPath = null;
+
+                    await SetSelectedStoryAsync(RecentStories.FirstOrDefault(x => x != Story) ?? Stories.FirstOrDefault(), false, false);
                 }
             }
             catch (Exception ex) { MessageBox.Show($"Error while deleting story '{Story.Title}':\n\n{ex.ToString()}"); }
@@ -645,7 +664,7 @@ window.scrollTo({{ top: scrollDiv, behavior: 'smooth'}});";
             //  Try to auto-select the last-opened story
             if (Settings.PreviousSessionSettings.RecentSelectedStory == null || !IndexedStories.TryGetValue(Settings.PreviousSessionSettings.RecentSelectedStory, out LiteroticaStory ToLoad))
                 ToLoad = Stories.FirstOrDefault();
-            await SetSelectedStoryAsync(ToLoad, true);
+            await SetSelectedStoryAsync(ToLoad, true, false);
 
             UpdateStoryVisibilities();
 
