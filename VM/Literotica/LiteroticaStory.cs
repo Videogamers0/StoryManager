@@ -416,9 +416,9 @@ namespace StoryManager.VM.Literotica
 
         public DelegateCommand<object> OpenFolder => new(_ => GeneralUtils.ShellExecute(FolderPath));
 
-        private const string DefaultDivider = "========================================";
+        private const string DefaultPlaintextDivider = "========================================";
 
-        public string AsPlainText(string Divider = DefaultDivider)
+        public string AsPlainText(string Divider = DefaultPlaintextDivider)
         {
             StringBuilder SB = new();
             SB.AppendLine($"{Story.Chapters.First().FullUrl} by {AuthorName}\n\n{Title}");
@@ -442,26 +442,31 @@ namespace StoryManager.VM.Literotica
         public static string GetChapterId(int ChapterIndex) => $"story_chapter{ChapterIndex}";
         public static string GetChapterAndPageId(int ChapterIndex, int PageIndex) => $"story_chapter{ChapterIndex}_page{PageIndex}";
 
-        public string AsHtml(int? FontSize, Color? ForegroundColor, Color? BackgroundColor, Color? HighlightColor, bool IncludeKeywords, IEnumerable<string> Keywords, string Divider = DefaultDivider)
+        private const string DefaultHtmlDivider = "<hr color=\"Black\" size=\"4px\" style=\"opacity: 0.25\">";
+
+        public string AsHtml(int? FontSize, Color? ForegroundColor, Color? BackgroundColor, Color? HighlightColor, bool IncludeKeywords, IEnumerable<string> Keywords, string Divider = DefaultHtmlDivider)
             => AsHtml(FontSize, ForegroundColor, BackgroundColor, HighlightColor, IncludeKeywords, string.Join(",", Keywords), Divider);
 
-        public string AsHtml(int? FontSize, Color? ForegroundColor, Color? BackgroundColor, Color? HighlightColor, bool IncludeKeywords, string CommaDelimitedKeywords, string Divider = DefaultDivider)
+        public string AsHtml(int? FontSize, Color? ForegroundColor, Color? BackgroundColor, Color? HighlightColor, bool IncludeKeywords, string CommaDelimitedKeywords, string Divider = DefaultHtmlDivider)
         {
             StringBuilder SB = new();
             string url = Story.Chapters.First().FullUrl;
-            SB.AppendLine($"<a href='{url}'>{url}</a> by {AuthorName}\n<h1 align=\"center\">{Title}</h1>");
+            string authorUrl = $"https://www.literotica.com/stories/memberpage.php?uid={Story.Author.userid}&page=submissions";
+            SB.AppendLine($"<a href='{url}'>{url}</a> by <a href='{authorUrl}'>{AuthorName}</a><h1 align=\"center\">{Title}</h1>");
 
             for (int i = 0; i < Story.Chapters.Count; i++)
             {
                 int ChapterNumber = i + 1;
                 SerializableChapter Chapter = Story.Chapters[i];
-                SB.AppendLine($"\n<div align=\"center\">{Divider}\n<h2 id=\"{GetChapterId(i)}\">Chapter {ChapterNumber}: {Chapter.Title}</h2>\n{Divider}</div>\n<b>{Chapter.Description}</b>\n");
+                if (ChapterNumber != 1)
+                    SB.AppendLine("\n");
+                SB.AppendLine($"<div align=\"center\">{Divider}<h2 id=\"{GetChapterId(i)}\">Chapter {ChapterNumber}: {Chapter.Title}</h2></div>\n<b>{Chapter.Description}</b>");
 
                 for (int j = 0; j < Chapter.Pages.Count; j++)
                 {
                     int PageNumber = j + 1;
                     SerializablePage Page = Chapter.Pages[j];
-                    SB.AppendLine($"{Divider}\n<h3 id=\"{GetChapterAndPageId(i, j)}\">Page {PageNumber}</h3>\n{Divider}\n\n{Page.Content}");
+                    SB.AppendLine($"{Divider}<h3 id=\"{GetChapterAndPageId(i, j)}\">Page {PageNumber}</h3>\n{Page.Content}");
                 }
             }
 
