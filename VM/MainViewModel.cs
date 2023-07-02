@@ -30,6 +30,7 @@ using Newtonsoft.Json.Linq;
 using Microsoft.Win32;
 using System.Reflection;
 using Microsoft.Web.WebView2.Core;
+using Octokit;
 
 namespace StoryManager.VM
 {
@@ -616,6 +617,64 @@ window.scrollTo({{ top: scrollDiv, behavior: 'smooth'}});";
             Window.Closing += HandleWindowClosing;
 
             TryShowGithubAfterInitialize(LoadStoriesTask);
+
+            //_ = CheckForUpdatesAsync(false);
+        }
+
+        public DelegateCommand<object> CheckForUpdates => new(_ => _ = CheckForUpdatesAsync(true));
+
+        private bool _IsCheckingForUpdates;
+        public bool IsCheckingForUpdates
+        {
+            get => _IsCheckingForUpdates;
+            private set
+            {
+                if (_IsCheckingForUpdates != value)
+                {
+                    _IsCheckingForUpdates = value;
+                    NPC(nameof(IsCheckingForUpdates));
+                }
+            }
+        }
+
+        private IReadOnlyList<Release> AvailableVersions = null;
+
+        private async Task CheckForUpdatesAsync(bool AlertIfUpToDate)
+        {
+            if (IsCheckingForUpdates)
+                return;
+
+            try
+            {
+                //https://stackoverflow.com/a/65029587
+
+                IReadOnlyList<Release> releases;
+                if (AvailableVersions != null)
+                    releases = AvailableVersions;
+                else
+                {
+                    try
+                    {
+                        IsCheckingForUpdates = true;
+                        GitHubClient client = new GitHubClient(new ProductHeaderValue("Videogamers0-StoryManager"));
+                        releases = await client.Repository.Release.GetAll("Videogamers0", "StoryManager");
+                        AvailableVersions = releases;
+                    }
+                    finally { IsCheckingForUpdates = false; }
+                }
+
+                Version latestGitHubVersion = new Version(releases[0].TagName.Substring(1));
+                Version localVersion = FileVersion;
+                if (localVersion.CompareTo(latestGitHubVersion) < 0)
+                {
+                    UpdateAvailable Dialog = new(releases[0]);
+                    Dialog.Owner = Window;
+                    Dialog.ShowDialog();
+                }
+                else if (AlertIfUpToDate)
+                    MessageBox.Show($"No updates found. You are using the latest version: {FileVersion}", "No updates available");
+            }
+            catch (Exception ex) { MessageBox.Show(ex.ToString()); }
         }
 
         private async void TryShowGithubAfterInitialize(Task InitializeTask)

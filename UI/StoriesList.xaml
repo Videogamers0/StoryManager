@@ -284,6 +284,7 @@
                 </TabItem.Header>
 
                 <DockPanel>
+                    <!-- Story searchbox -->
                     <DockPanel DockPanel.Dock="Top" Margin="3,5,3,3">
                         <Button DockPanel.Dock="Left" Padding="2" Command="{Binding CommitSearch}">
                             <Image Width="16" Height="16" Source="/Resources/Search_64x64.png" />

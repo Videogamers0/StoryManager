@@ -163,4 +163,7 @@
   <data name="Unread_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Unread_48x48.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="Update_64x64" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Update_64x64.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
 </root>

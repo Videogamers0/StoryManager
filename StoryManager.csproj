@@ -25,6 +25,7 @@
     <None Remove="Resources\Settings_64x64.png" />
     <None Remove="Resources\Stack_64x64.png" />
     <None Remove="Resources\Unread_48x48.png" />
+    <None Remove="Resources\Update_64x64.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -44,6 +45,7 @@
     <PackageReference Include="Microsoft-WindowsAPICodePack-Shell" Version="1.1.5" />
     <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.1823.32" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Octokit" Version="6.2.1" />
     <PackageReference Include="Prism.Core" Version="8.1.97" />
     <PackageReference Include="SharpClipboard" Version="3.5.2" />
   </ItemGroup>
@@ -64,6 +66,7 @@
     <Resource Include="Resources\Settings_64x64.png" />
     <Resource Include="Resources\Stack_64x64.png" />
     <Resource Include="Resources\Unread_48x48.png" />
+    <Resource Include="Resources\Update_64x64.png" />
   </ItemGroup>
 
   <ItemGroup>

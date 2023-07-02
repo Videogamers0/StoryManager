@@ -1,7 +1,6 @@
 ﻿Some ideas for future improvements:
 
 - Setting to auto-mark stories as 'Read' when user reaches the bottom scroll offset
-- 'Check for updates' button? Could just open the latest Releases page on Github
 - Additional settings to change sorting?
     Sort groupbox: List of options, can drag/drop to re-order
         A-Z, Download Date, Authored Date, Last Viewed, Your Rating etc

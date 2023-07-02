@@ -1,0 +1,27 @@
+﻿<Window x:Class="StoryManager.UI.UpdateAvailable"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:StoryManager.UI"
+        mc:Ignorable="d"
+        SizeToContent="Height"
+        Width="430"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        Title="Update Available" Background="#FFEFEFEF">
+
+    <StackPanel Orientation="Vertical" Margin="12">
+        <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Text="Update Available" FontSize="18" FontWeight="SemiBold" />
+        <Separator Margin="0,4" />
+        <TextBlock Text="{Binding Release.Name, Mode=OneWay}" d:Text="StoryManager 1.0.0" />
+        <TextBlock TextWrapping="Wrap">
+            <Hyperlink Command="{Binding OpenInBrowser}">
+                <Run Text="{Binding Release.HtmlUrl, Mode=OneWay}" d:Text="https://github.com/Videogamers0/StoryManager/releases/tag/v1.0.0" />
+            </Hyperlink>
+        </TextBlock>
+        <Border Height="15" />
+        <Button HorizontalAlignment="Center" Content="Close" IsDefault="True" Click="Close_Click" Padding="20,2" />
+    </StackPanel>
+    
+</Window>
