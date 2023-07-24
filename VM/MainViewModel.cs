@@ -268,27 +268,45 @@ css_getclass('.highlight').style.background=""""{{GetRGBAHexString(ForegroundCol
 
                             const int TwoMB = 1024 * 1024 * 2;
                             int ContentLength = Encoding.Unicode.GetByteCount(HTML);
-                            if (ContentLength >= TwoMB && SelectedStory.IsSaved && File.Exists(SelectedStory.StoryHtmlFilePath))
-                            {
-                                //  Synchronously set the source to the file containing the html content
-                                DateTime StartTime = DateTime.Now;
-                                TimeSpan Timeout = TimeSpan.FromSeconds(2.0);
-                                bool IsSourceChanged = false;
-                                void HandleSourceChanged(object sender, EventArgs e)
-                                {
-                                    IsSourceChanged = true;
-                                    WebView.SourceChanged -= HandleSourceChanged;
-                                }
-                                WebView.SourceChanged += HandleSourceChanged;
-                                WebView.Source = new Uri(SelectedStory.StoryHtmlFilePath);
-                                //  Wait until the new source is finished loading
-                                while (!IsSourceChanged && DateTime.Now.Subtract(StartTime) <= Timeout)
-                                    await Task.Delay(TimeSpan.FromMilliseconds(5));
+                            if (ContentLength < TwoMB)
+                                throw ex;
 
-                                LoadSuccess = true;
+                            string HtmlFilePath;
+                            bool IsTempFile;
+                            if (SelectedStory.IsSaved && File.Exists(SelectedStory.StoryHtmlFilePath))
+                            {
+                                HtmlFilePath = SelectedStory.StoryHtmlFilePath;
+                                IsTempFile = false;
                             }
                             else
-                                throw ex; //TODO should probably write the HTML to a temp file, set the Source, wait until it's done changing, then delete the temp file
+                            {
+                                HtmlFilePath = Path.Combine(Path.GetTempPath(), Path.GetTempFileName() + ".html");
+                                File.WriteAllText(HtmlFilePath, HTML);
+                                IsTempFile = true;
+                            }
+
+                            //  Synchronously set the source to the file containing the html content
+                            DateTime StartTime = DateTime.Now;
+                            TimeSpan Timeout = TimeSpan.FromSeconds(10.0);
+                            bool IsSourceChanged = false;
+                            void HandleSourceChanged(object sender, EventArgs e)
+                            {
+                                IsSourceChanged = true;
+                                WebView.SourceChanged -= HandleSourceChanged;
+
+                                if (IsTempFile)
+                                {
+                                    try { File.Delete(HtmlFilePath); }
+                                    catch { }
+                                }    
+                            }
+                            WebView.SourceChanged += HandleSourceChanged;
+                            WebView.Source = new Uri(HtmlFilePath);
+                            //  Wait until the new source is finished loading
+                            while (!IsSourceChanged && DateTime.Now.Subtract(StartTime) <= Timeout)
+                                await Task.Delay(TimeSpan.FromMilliseconds(5));
+
+                            LoadSuccess = true;
                         }
                     }
                 }

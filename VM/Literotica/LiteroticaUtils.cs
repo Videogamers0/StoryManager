@@ -3,7 +3,9 @@ using StoryManager.VM.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
+using System.Net.Sockets;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -80,6 +82,16 @@ namespace StoryManager.VM.Literotica
             return result;
         }
 
+        //Taken from: https://stackoverflow.com/a/24087164/11689514
+        private static List<List<T>> ChunkBy<T>(List<T> source, int chunkSize)
+        {
+            return source
+                .Select((x, i) => new { Index = i, Value = x })
+                .GroupBy(x => x.Index / chunkSize)
+                .Select(x => x.Select(v => v.Value).ToList())
+                .ToList();
+        }
+
         public static async Task<SerializableStory> DownloadStory(string url, CancellationToken? ct = null)
         {
             string APIUrl = GetAPIUri(url);
@@ -87,8 +99,57 @@ namespace StoryManager.VM.Literotica
             LiteroticaPage InitialPage = GeneralUtils.DeserializeJson<LiteroticaPage>(Json);
 
             List<string> ChapterUrls = InitialPage.chapterFirstPageAPIUrls.ToList();
+
+#if NEVER
             List<Task<SerializableChapter>> ChapterTasks = ChapterUrls.Select(x => DownloadChapter(x)).ToList();
             await Task.WhenAll(ChapterTasks);
+#else
+            //  Stories with a large # of chapters tend to throw an error while downloading:
+            //  ===========================================================================================================================================
+            //  System.Net.Http.HttpRequestException: The SSL connection could not be established, see inner exception.
+            //  ---> System.IO.IOException: Unable to write data to the transport connection: An existing connection was forcibly closed by the remote host.
+            //  ---> System.Net.Sockets.SocketException (100054): An existing connection was forcibly closed by the remote host.
+            //  ===========================================================================================================================================
+            //  To avoid this, download the story in smaller batches
+
+            const int MaxConnections = 4;
+            List<Task<SerializableChapter>> ChapterTasks = new();
+            List<List<string>> ChapterChunks = ChunkBy(ChapterUrls, MaxConnections);
+            foreach (var Chunk in ChapterChunks)
+            {
+                async Task DoWork()
+                {
+                    List<Task<SerializableChapter>> ChunkTasks = Chunk.Select(DownloadChapter).ToList();
+                    await Task.WhenAll(ChunkTasks);
+                    ChapterTasks.AddRange(ChunkTasks);
+                    await Task.Delay(TimeSpan.FromSeconds(0.1));
+                }
+
+                const int MaxRetries = 3;
+                int CurrentAttempt = 1;
+                bool Success = false;
+                while (!Success && CurrentAttempt <= MaxRetries)
+                {
+                    try
+                    {
+                        await DoWork();
+                        Success = true;
+                    }
+                    catch (System.Net.Http.HttpRequestException ex)
+                    {
+                        if (ex.InnerException is IOException InnerIOException && InnerIOException.InnerException is SocketException)
+                        {
+                            //  I don't know why but it still occassionally throws the SocketException. Wait a few seconds and try again...
+                            TimeSpan Delay = CurrentAttempt <= 1 ? TimeSpan.FromSeconds(5) : TimeSpan.FromSeconds(30);
+                            await Task.Delay(Delay);
+                            CurrentAttempt++;
+                        }
+                        else
+                            break;
+                    }
+                }
+            }
+#endif
             List<SerializableChapter> Chapters = ChapterTasks.Select(x => x.Result).ToList();
             List<SerializablePage> Pages = Chapters.SelectMany(x => x.Pages).ToList();
 
