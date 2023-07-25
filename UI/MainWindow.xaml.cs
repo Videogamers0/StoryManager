@@ -45,7 +45,7 @@ namespace StoryManager.UI
             Loaded += (_, __) =>
             {
                 try { DataContext = new MainViewModel(this); }
-                catch (Exception ex) { MessageBox.Show($"Error during initialization:\n\n{ex.ToString()}"); }
+                catch (Exception ex) { MessageBox.Show($"Error during initialization:\n\n{ex}"); }
             };
         }
 

@@ -21,6 +21,34 @@ namespace StoryManager.UI
     /// </summary>
     public partial class StoriesList : UserControl
     {
+        public static readonly DependencyProperty IsExpandedProperty =
+            DependencyProperty.Register(nameof(IsExpanded), typeof(bool), typeof(StoriesList), new PropertyMetadata(true, HandleIsExpandedChanged));
+
+        private static void HandleIsExpandedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is StoriesList storiesList)
+            {
+                if (e.NewValue is bool isExpanded)
+                {
+                    storiesList.OnIsExpandedChanged?.Invoke(storiesList, isExpanded);
+                    if (isExpanded)
+                        storiesList.OnExpanded?.Invoke(storiesList, EventArgs.Empty);
+                    else
+                        storiesList.OnCollapsed?.Invoke(storiesList, EventArgs.Empty);
+                }
+            }
+        }
+
+        public event EventHandler<bool> OnIsExpandedChanged;
+        public event EventHandler<EventArgs> OnExpanded;
+        public event EventHandler<EventArgs> OnCollapsed;
+
+        public bool IsExpanded
+        {
+            get => (bool)GetValue(IsExpandedProperty);
+            set => SetValue(IsExpandedProperty, value);
+        }
+
         public StoriesList()
         {
             InitializeComponent();

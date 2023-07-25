@@ -127,31 +127,80 @@
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition x:Name="SidebarColumn" Width="260" MinWidth="240" MaxWidth="350" />
+                <ColumnDefinition x:Name="SidebarColumn">
+                    <ColumnDefinition.Style>
+                        <Style TargetType="{x:Type ColumnDefinition}">
+                            <Setter Property="MinWidth" Value="240" />
+                            <Setter Property="MaxWidth" Value="350" />
+                            <Setter Property="Width" Value="260" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ElementName=StoriesListControl, Path=IsExpanded, Mode=OneWay}" Value="False">
+                                    <Setter Property="MinWidth" Value="24" />
+                                    <Setter Property="MaxWidth" Value="24" />
+                                    <Setter Property="Width" Value="24" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ColumnDefinition.Style>
+                </ColumnDefinition>
                 <ColumnDefinition Width="10" />
                 <ColumnDefinition Width="*" MinWidth="350" />
             </Grid.ColumnDefinitions>
 
-            <!-- Stories list, sidebar -->
-            <DockPanel Grid.Row="0" Grid.Column="0">
+            <!-- Sidebar -->
+            <Grid Grid.Row="0" Grid.Column="0">
 
-                <Grid DockPanel.Dock="Top" Margin="0,0,0,5">
+                <!-- Collapsed content -->
+                <StackPanel Orientation="Vertical" HorizontalAlignment="Left" d:Visibility="Collapsed"
+                            Visibility="{Binding ElementName=StoriesListControl, Path=IsExpanded, Mode=OneWay, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
                     <Button HorizontalAlignment="Left" VerticalAlignment="Top" Padding="1" Command="{Binding Settings.OpenWindow}"
-                            ToolTip="Settings" ToolTipService.InitialShowDelay="50">
+                                ToolTip="Settings" ToolTipService.InitialShowDelay="50">
                         <Image Width="16" Height="16" Source="/Resources/Settings_64x64.png" />
                     </Button>
-                    <Button Content="Open downloader" Command="{Binding Downloader.OpenWindow}" HorizontalAlignment="Center" Padding="12,1" Margin="0,0,0,5" />
-                </Grid>
+                    <Border Height="10" />
+                    <Expander ExpandDirection="Left" HorizontalAlignment="Left"
+                              IsExpanded="{Binding ElementName=StoriesListControl, Path=IsExpanded, Mode=TwoWay}">
+                        <Expander.Header>
+                            <TextBlock Text="Stories" HorizontalAlignment="Center" FontSize="14">
+                                <TextBlock.Style>
+                                    <Style TargetType="{x:Type TextBlock}">
+                                        <Setter Property="Foreground" Value="Black" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Settings.IsDarkMode, Mode=OneWay, FallbackValue=False}" Value="True">
+                                                <Setter Property="Foreground" Value="White" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                                <TextBlock.LayoutTransform>
+                                    <RotateTransform Angle="90" />
+                                </TextBlock.LayoutTransform>
+                            </TextBlock>
+                        </Expander.Header>
+                    </Expander>
+                </StackPanel>
 
-                <!-- Selected story details -->
-                <ScrollViewer DockPanel.Dock="Bottom" VerticalScrollBarVisibility="Auto" MaxHeight="200" Margin="0,10,0,0" Padding="2" d:Visibility="Visible"
-                              Visibility="{Binding IsStorySelected, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter},FallbackValue=Collapsed}">
-                    <local:StoryDetails DataContext="{Binding SelectedStory}" />
-                </ScrollViewer>
+                <!-- Expanded content -->
+                <DockPanel Visibility="{Binding ElementName=StoriesListControl, Path=IsExpanded, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" d:Visibility="Visible">
 
-                <!-- Stories list -->
-                <local:StoriesList />
-            </DockPanel>
+                    <Grid DockPanel.Dock="Top" Margin="0,0,0,5">
+                        <Button HorizontalAlignment="Left" VerticalAlignment="Top" Padding="1" Command="{Binding Settings.OpenWindow}"
+                                ToolTip="Settings" ToolTipService.InitialShowDelay="50">
+                            <Image Width="16" Height="16" Source="/Resources/Settings_64x64.png" />
+                        </Button>
+                        <Button Content="Open downloader" Command="{Binding Downloader.OpenWindow}" HorizontalAlignment="Center" Padding="12,1" Margin="0,0,0,5" />
+                    </Grid>
+
+                    <!-- Selected story details -->
+                    <ScrollViewer DockPanel.Dock="Bottom" VerticalScrollBarVisibility="Auto" MaxHeight="200" Margin="0,10,0,0" Padding="2" d:Visibility="Visible"
+                                  Visibility="{Binding IsStorySelected, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter},FallbackValue=Collapsed}">
+                        <local:StoryDetails DataContext="{Binding SelectedStory}" />
+                    </ScrollViewer>
+
+                    <!-- Stories list -->
+                    <local:StoriesList x:Name="StoriesListControl" />
+                </DockPanel>
+            </Grid>
 
             <Grid Grid.Row="0" Grid.Column="2">
                 <Grid.RowDefinitions>
