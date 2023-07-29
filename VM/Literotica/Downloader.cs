@@ -142,6 +142,8 @@ namespace StoryManager.VM.Literotica
             }
         }
 
+        private string PrefilledAuthorUrl = null;
+
         public bool CanGetStoriesFromAuthorUrl => !string.IsNullOrEmpty(AuthorUrl);
 
         private bool _IsDownloading;
@@ -234,6 +236,13 @@ namespace StoryManager.VM.Literotica
                     if (string.IsNullOrEmpty(Value))
                         Value = System.Windows.Forms.Clipboard.GetText()?.Trim();
                     ClipboardUrl = Value;
+
+                    //  Attempt to autofill the author url if the clipboard text matches the expected author url format and user hasn't manually placed a url into the Author textbox
+                    if (!string.IsNullOrEmpty(Value) && Value.Contains(@"literotica.com/stories/memberpage.php?uid=") && (string.IsNullOrEmpty(AuthorUrl) || AuthorUrl == PrefilledAuthorUrl))
+                    {
+                        AuthorUrl = UrlExtensions.SetUrlParameter(Value, "page", "submissions");
+                        PrefilledAuthorUrl = AuthorUrl;
+                    }
                 }
                 else
                     ClipboardUrl = "";
@@ -337,6 +346,8 @@ namespace StoryManager.VM.Literotica
                                 PendingDownloads.Add(Item);
                         }
                     }
+
+                    PrefilledAuthorUrl = null;
                 }
             }
             catch (Exception ex) { MessageBox.Show(ex.ToString()); }
