@@ -143,7 +143,7 @@ namespace StoryManager.VM
         public int FontSize => _FontSize;
         public async Task SetFontSizeAsync(int Value, bool UpdateDocument)
         {
-            int ActualValue = Math.Clamp(Value, 10, 40);
+            int ActualValue = Math.Clamp(Value, 10, 50);
             if (FontSize != ActualValue)
             {
                 _FontSize = ActualValue;
