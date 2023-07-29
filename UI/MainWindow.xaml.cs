@@ -42,6 +42,17 @@ namespace StoryManager.UI
         {
             InitializeComponent();
 
+            KeyDown += (sender, e) =>
+            {
+                if (DataContext is MainViewModel MVM)
+                {
+                    if (e.Key == Key.D && Keyboard.Modifiers == ModifierKeys.Control)
+                    {
+                        MVM.Downloader.OpenOrActivateWindow();
+                    }
+                }
+            };
+
             Loaded += (_, __) =>
             {
                 try { DataContext = new MainViewModel(this); }
