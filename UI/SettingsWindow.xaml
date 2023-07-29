@@ -124,6 +124,70 @@
 
                 <Border Height="{StaticResource RowPadding}" />
 
+                <GroupBox Header="Font:">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="4" />
+                            <RowDefinition Height="auto" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto" />
+                            <ColumnDefinition Width="5" />
+                            <ColumnDefinition Width="auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Row="0" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Center" Text="Font Size:" />
+
+                        <ComboBox Grid.Row="0" Grid.Column="2" Width="70" HorizontalAlignment="Left" IsEditable="True" Text="{Binding BindableFontSize, Mode=TwoWay}">
+                            <ComboBox.ItemsSource>
+                                <x:Array Type="{x:Type sys:Int32}">
+                                    <sys:Int32>10</sys:Int32>
+                                    <sys:Int32>12</sys:Int32>
+                                    <sys:Int32>14</sys:Int32>
+                                    <sys:Int32>16</sys:Int32>
+                                    <sys:Int32>18</sys:Int32>
+                                    <sys:Int32>20</sys:Int32>
+                                    <sys:Int32>22</sys:Int32>
+                                    <sys:Int32>24</sys:Int32>
+                                    <sys:Int32>26</sys:Int32>
+                                    <sys:Int32>28</sys:Int32>
+                                    <sys:Int32>30</sys:Int32>
+                                </x:Array>
+                            </ComboBox.ItemsSource>
+                        </ComboBox>
+
+                        <TextBlock Grid.Row="2" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Center" Text="Font Family:" />
+
+                        <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.Column="2" HorizontalAlignment="Left">
+                            <ComboBox Width="150" IsEditable="True" Text="{Binding BindableFontFamily, Mode=TwoWay}">
+                                <ComboBox.ItemsSource>
+                                    <x:Array Type="{x:Type sys:String}">
+                                        <sys:String>Arial</sys:String>
+                                        <sys:String>Calibri</sys:String>
+                                        <sys:String>Calibri Light</sys:String>
+                                        <sys:String>Comic Sans MS</sys:String>
+                                        <sys:String>Courier New</sys:String>
+                                        <sys:String>Georgia</sys:String>
+                                        <sys:String>Lucida Sans</sys:String>
+                                        <sys:String>MS Gothic</sys:String>
+                                        <sys:String>Segoe UI</sys:String>
+                                        <sys:String>Tahoma</sys:String>
+                                        <sys:String>Times New Roman</sys:String>
+                                        <sys:String>Trebuchet MS</sys:String>
+                                        <sys:String>Verdana</sys:String>
+                                    </x:Array>
+                                </ComboBox.ItemsSource>
+                            </ComboBox>
+                            <Border Width="5" />
+                            <Button Content="Reset to default" Padding="6,1" Command="{Binding ResetFontFamily}"
+                                    IsEnabled="{Binding IsUsingDefaultFontFamily, Mode=OneWay, Converter={StaticResource InverseBooleanConverter}}" />
+                        </StackPanel>
+                    </Grid>
+                </GroupBox>
+
+                <Border Height="{StaticResource RowPadding}" />
+
                 <GroupBox Header="Colors:">
                     <StackPanel Orientation="Vertical">
                         <Grid DockPanel.Dock="Right">

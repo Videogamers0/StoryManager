@@ -5,6 +5,7 @@ using StoryManager.VM.Helpers;
 using StoryManager.VM.Literotica;
 using System;
 using System.Collections.Generic;
+using System.Drawing.Text;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -155,6 +156,37 @@ namespace StoryManager.VM
             }
         }
         #endregion FontSize
+
+        #region FontFamily
+        private readonly HashSet<string> ValidFontFamilies = new InstalledFontCollection().Families.Select(x => x.Name).ToHashSet();
+
+        public const string DefaultFontFamily = "Times New Roman";
+        public bool IsUsingDefaultFontFamily => FontFamily == DefaultFontFamily;
+
+        public string BindableFontFamily
+        {
+            get => FontFamily;
+            set => _ = SetFontFamilyAsync(value, true);
+        }
+
+        private string _FontFamily;
+        public string FontFamily => _FontFamily;
+        public async Task SetFontFamilyAsync(string Value, bool UpdateDocument)
+        {
+            if (FontFamily != Value && ValidFontFamilies.Contains(Value))
+            {
+                _FontFamily = Value;
+                NPC(nameof(FontFamily));
+                NPC(nameof(BindableFontFamily));
+                NPC(nameof(IsUsingDefaultFontFamily));
+
+                if (UpdateDocument)
+                    await MVM.RefreshFontFamilyAsync();
+            }
+        }
+
+        public DelegateCommand<object> ResetFontFamily => new(_ => _ = SetFontFamilyAsync(DefaultFontFamily, true));
+        #endregion FontFamily
 
         #region Colors
         public static IEnumerable<ColorPalette> StaticColorPalettes
@@ -408,6 +440,7 @@ namespace StoryManager.VM
             _ = SetCommaDelimitedKeywordsAsync(PreviousSessionSettings.Keywords, false);
 
             _ = SetFontSizeAsync(PreviousSessionSettings.GetFontSize(DefaultFontSize), false);
+            _ = SetFontFamilyAsync(PreviousSessionSettings.GetFontFamily(DefaultFontFamily), false);
 
             _ = SetForegroundColorAsync(PreviousSessionSettings.GetForegroundColor(DefaultColorPalettes[Theme].ForegroundColor), false);
             _ = SetBackgroundColorAsync(PreviousSessionSettings.GetBackgroundColor(DefaultColorPalettes[Theme].BackgroundColor), false);
@@ -456,6 +489,7 @@ namespace StoryManager.VM
                 SidebarWidth = MVM.Window.SidebarColumn.ActualWidth,
 
                 FontSize = IsUsingDefaultFontSize ? null : FontSize,
+                FontFamily = IsUsingDefaultFontFamily ? null : FontFamily,
 
                 ForegroundColor = IsUsingDefaultForegroundColor ? null : ColorConverter.ConvertToString(ForegroundColor),
                 BackgroundColor = IsUsingDefaultBackgroundColor ? null : ColorConverter.ConvertToString(BackgroundColor),

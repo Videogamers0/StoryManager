@@ -60,6 +60,12 @@ namespace StoryManager.VM
             await WebView.ExecuteScriptAsync(script);
         }
 
+        public async Task RefreshFontFamilyAsync()
+        {
+            string script = $@"document.getElementById(""story_content"").style.fontFamily = ""{Settings.FontFamily}"";";
+            await WebView.ExecuteScriptAsync(script);
+        }
+
         public async Task RefreshForegroundColorAsync()
         {
             string script = $@"document.getElementById(""story_content"").style.color = ""{GeneralUtils.GetRGBAHexString(Settings.ForegroundColor)}"";";
@@ -255,7 +261,7 @@ css_getclass('.highlight').style.background=""""{{GetRGBAHexString(ForegroundCol
                 {
                     if (SelectedStory != null)
                     {
-                        string HTML = SelectedStory?.AsHtml(Settings.FontSize, Settings.ForegroundColor, Settings.BackgroundColor, Settings.HighlightColor, false, Settings.CommaDelimitedKeywords) ?? "";
+                        string HTML = SelectedStory?.AsHtml(Settings.FontSize, Settings.FontFamily, Settings.ForegroundColor, Settings.BackgroundColor, Settings.HighlightColor, false, Settings.CommaDelimitedKeywords) ?? "";
                         try
                         { 
                             WebView.NavigateToString(HTML);

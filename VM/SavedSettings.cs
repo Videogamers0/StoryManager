@@ -44,6 +44,9 @@ namespace StoryManager
         [DataMember(Name = "FontSize")]
         public int? FontSize { get; set; }
 
+        [DataMember(Name = "FontFamily")]
+        public string FontFamily { get; set; }
+
         [DataMember(Name = "ForegroundColor")]
         public string ForegroundColor { get; set; }
         [DataMember(Name = "BackgroundColor")]
@@ -115,6 +118,7 @@ namespace StoryManager
             SidebarWidth = null;
 
             FontSize = null;
+            FontFamily = null;
 
             ForegroundColor = null;
             BackgroundColor = null;
@@ -149,6 +153,8 @@ namespace StoryManager
         }
 
         public int GetFontSize(int DefaultValue) => FontSize ?? DefaultValue;
+
+        public string GetFontFamily(string DefaultValue) => FontFamily ?? DefaultValue;
 
         public Color GetForegroundColor(Color DefaultValue) => ForegroundColor == null ? DefaultValue : (Color)ColorConverter.ConvertFromString(ForegroundColor);
         public Color GetBackgroundColor(Color DefaultValue) => BackgroundColor == null ? DefaultValue : (Color)ColorConverter.ConvertFromString(BackgroundColor);

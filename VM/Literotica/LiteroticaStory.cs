@@ -388,7 +388,7 @@ namespace StoryManager.VM.Literotica
                 {
                     File.WriteAllText(Path.Combine(Folder, "story.json"), GeneralUtils.SerializeJson(Story, true));
                     File.WriteAllText(Path.Combine(Folder, SummaryFilename), GeneralUtils.SerializeJson(Story.AsSummary(), true));
-                    File.WriteAllText(Path.Combine(Folder, "story.html"), AsHtml(null, null, null, null, true, MVM.Settings.CommaDelimitedKeywords));
+                    File.WriteAllText(Path.Combine(Folder, "story.html"), AsHtml(null, null, null, null, null, true, MVM.Settings.CommaDelimitedKeywords));
                     File.WriteAllText(Path.Combine(Folder, "story.txt"), AsPlainText());
                     FolderPath = Folder;
                 }
@@ -445,10 +445,10 @@ namespace StoryManager.VM.Literotica
 
         private const string DefaultHtmlDivider = "<hr color=\"Black\" size=\"4px\" style=\"opacity: 0.25\">";
 
-        public string AsHtml(int? FontSize, Color? ForegroundColor, Color? BackgroundColor, Color? HighlightColor, bool IncludeKeywords, IEnumerable<string> Keywords, string Divider = DefaultHtmlDivider)
-            => AsHtml(FontSize, ForegroundColor, BackgroundColor, HighlightColor, IncludeKeywords, string.Join(",", Keywords), Divider);
+        public string AsHtml(int? FontSize, string FontFamily, Color? ForegroundColor, Color? BackgroundColor, Color? HighlightColor, bool IncludeKeywords, IEnumerable<string> Keywords, string Divider = DefaultHtmlDivider)
+            => AsHtml(FontSize, FontFamily, ForegroundColor, BackgroundColor, HighlightColor, IncludeKeywords, string.Join(",", Keywords), Divider);
 
-        public string AsHtml(int? FontSize, Color? ForegroundColor, Color? BackgroundColor, Color? HighlightColor, bool IncludeKeywords, string CommaDelimitedKeywords, string Divider = DefaultHtmlDivider)
+        public string AsHtml(int? FontSize, string FontFamily, Color? ForegroundColor, Color? BackgroundColor, Color? HighlightColor, bool IncludeKeywords, string CommaDelimitedKeywords, string Divider = DefaultHtmlDivider)
         {
             StringBuilder SB = new();
             string url = Story.Chapters.First().FullUrl;
@@ -474,6 +474,7 @@ namespace StoryManager.VM.Literotica
             string StoryContent = SB.ToString();
 
             string FontSizeString = FontSize.HasValue ? $"font-size: {FontSize.Value}px;" : "";
+            string FontFamilyString = FontFamily != null ? $"font-family: {FontFamily};" : "";
 
             string ForegroundColorString = ForegroundColor.HasValue ? $"color: {GeneralUtils.GetRGBAHexString(ForegroundColor.Value)};" : "";
             string BackgroundColorString = BackgroundColor.HasValue ? $"background-Color: {GeneralUtils.GetRGBAHexString(BackgroundColor.Value)};" : "";
@@ -508,7 +509,7 @@ h3 {{
 </style>
 <body style=""margin:25px; {BackgroundColorString}"">
   {KeywordsContent}
-  <span id=""story_content"" style=""white-space: pre-wrap; {FontSizeString} {ForegroundColorString}"">{StoryContent}</span>
+  <span id=""story_content"" style=""white-space: pre-wrap; {FontSizeString} {FontFamilyString} {ForegroundColorString}"">{StoryContent}</span>
   {HighlightScript}
 </body>
 </html>
