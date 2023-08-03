@@ -160,7 +160,7 @@
                         <TextBlock Grid.Row="2" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Center" Text="Font Family:" />
 
                         <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.Column="2" HorizontalAlignment="Left">
-                            <ComboBox Width="150" IsEditable="True" Text="{Binding BindableFontFamily, Mode=TwoWay}">
+                            <ComboBox Width="150" IsEditable="True" Text="{Binding BindableFontFamily, Mode=TwoWay}" AlternationCount="2">
                                 <ComboBox.ItemsSource>
                                     <x:Array Type="{x:Type sys:String}">
                                         <sys:String>Arial</sys:String>
@@ -178,6 +178,32 @@
                                         <sys:String>Verdana</sys:String>
                                     </x:Array>
                                 </ComboBox.ItemsSource>
+                                <ComboBox.ItemContainerStyle>
+                                    <Style TargetType="{x:Type ComboBoxItem}">
+                                        <Setter Property="Padding" Value="4" />
+                                        <Setter Property="BorderBrush" Value="Gray" />
+                                        <Setter Property="BorderThickness" Value="0,0,0,1" />
+                                        <Style.Triggers>
+                                            <Trigger Property="ItemsControl.AlternationIndex"  Value="0">
+                                                <Setter Property="Background" Value="White" />
+                                            </Trigger>
+                                            <Trigger Property="ItemsControl.AlternationIndex"  Value="1">
+                                                <Setter Property="Background" Value="#EFEFEF" />
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ComboBox.ItemContainerStyle>
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Vertical">
+                                            <TextBlock FontFamily="{Binding Mode=OneWay}" TextWrapping="Wrap">
+                                                <Run FontSize="14" Text="{Binding Mode=OneWay}" />
+                                                <LineBreak/>
+                                                <Run FontSize="10" Text="The quick brown fox jumped over the lazy dog" />
+                                            </TextBlock>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
                             </ComboBox>
                             <Border Width="5" />
                             <Button Content="Reset to default" Padding="6,1" Command="{Binding ResetFontFamily}"
