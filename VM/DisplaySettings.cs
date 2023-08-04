@@ -67,6 +67,34 @@ namespace StoryManager.VM
             }
         }
 
+        private bool _ShowPageCount;
+        public bool ShowPageCount
+        {
+            get => _ShowPageCount;
+            set
+            {
+                if (_ShowPageCount != value)
+                {
+                    _ShowPageCount = value;
+                    NPC(nameof(ShowPageCount));
+                }
+            }
+        }
+
+        private bool _ShowWordCount;
+        public bool ShowWordCount
+        {
+            get => _ShowWordCount;
+            set
+            {
+                if (_ShowWordCount != value)
+                {
+                    _ShowWordCount = value;
+                    NPC(nameof(ShowWordCount));
+                }
+            }
+        }
+
         private bool _ShowUserRating;
         public bool ShowUserRating
         {
@@ -103,6 +131,8 @@ namespace StoryManager.VM
             ShowDateApproved = false;
             ShowReadState = true;
             ShowOverallRating = false;
+            ShowPageCount = false;
+            ShowWordCount = false;
             ShowUserRating = false;
             ShowDateDownloaded = false;
         }
@@ -114,6 +144,8 @@ namespace StoryManager.VM
             ShowDateApproved = InheritFrom.ShowDateApproved;
             ShowReadState = InheritFrom.ShowReadState;
             ShowOverallRating = InheritFrom.ShowOverallRating;
+            ShowPageCount = InheritFrom.ShowPageCount;
+            ShowWordCount = InheritFrom.ShowWordCount;
             ShowUserRating = InheritFrom.ShowUserRating;
             ShowDateDownloaded = InheritFrom.ShowDateDownloaded;
         }

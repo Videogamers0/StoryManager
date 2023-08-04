@@ -88,6 +88,10 @@ namespace StoryManager
         public bool ShowReadState { get; set; }
         [DataMember(Name = "ShowOverallRating")]
         public bool ShowOverallRating { get; set; }
+        [DataMember(Name = "ShowPageCount")]
+        public bool ShowPageCount { get; set; }
+        [DataMember(Name = "ShowWordCount")]
+        public bool ShowWordCount { get; set; }
         [DataMember(Name = "ShowUserRating")]
         public bool ShowUserRating { get; set; }
         [DataMember(Name = "ShowDateDownloaded")]
@@ -144,6 +148,8 @@ namespace StoryManager
             ShowDateApproved = false;
             ShowReadState = true;
             ShowOverallRating = false;
+            ShowPageCount = false;
+            ShowWordCount = false;
             ShowUserRating = false;
             ShowDateDownloaded = false;
 

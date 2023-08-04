@@ -515,6 +515,8 @@ namespace StoryManager.VM
                 ShowDateApproved = DisplaySettings.ShowDateApproved,
                 ShowReadState = DisplaySettings.ShowReadState,
                 ShowOverallRating = DisplaySettings.ShowOverallRating,
+                ShowPageCount = DisplaySettings.ShowPageCount,
+                ShowWordCount = DisplaySettings.ShowWordCount,
                 ShowUserRating = DisplaySettings.ShowUserRating,
                 ShowDateDownloaded = DisplaySettings.ShowDateDownloaded,
 

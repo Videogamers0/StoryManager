@@ -768,7 +768,7 @@ window.scrollTo({{ top: scrollDiv, behavior: 'smooth'}});";
         {
             Stopwatch sw = Stopwatch.StartNew();
 
-            Dictionary<string, SerializableStory> CachedStories = Settings.PreviousSessionSettings.StoryMetadata
+            Dictionary<string, SerializableStory> CachedStories = Settings.PreviousSessionSettings.StoryMetadata.Where(x => x.IsUpToDate)
                 .DistinctBy(x => GetStoryUniqueKey(x.Author.username, x.Title)).ToDictionary(x => GetStoryUniqueKey(GeneralUtils.ToSafeFilename(x.Author.username), GeneralUtils.ToSafeFilename(x.Title)));
 
             string BaseFolder = Settings.StoriesDirectory;
@@ -792,14 +792,24 @@ window.scrollTo({{ top: scrollDiv, behavior: 'smooth'}});";
                             if (!CachedStories.TryGetValue(Key, out SerializableStory Story))
                             {
                                 string SummaryFile = Path.Combine(StoryFolder, LiteroticaStory.SummaryFilename);
-                                bool SummaryFileExists = File.Exists(SummaryFile);
-                                string JsonFile = SummaryFileExists ? SummaryFile : StoryFile;
 
-                                string Json = File.ReadAllText(JsonFile);
-                                Story = GeneralUtils.DeserializeJson<SerializableStory>(Json);
-
-                                if (!SummaryFileExists)
+                                //  First try loading the data from the smaller story-metadata.json file
+                                bool Loaded = false;
+                                if (File.Exists(SummaryFile))
                                 {
+                                    string Json = File.ReadAllText(SummaryFile);
+                                    Story = GeneralUtils.DeserializeJson<SerializableStory>(Json);
+
+                                    //  If summary data is from an older version, it must be fully loaded and have its summary data re-written
+                                    if (Story.IsUpToDate)
+                                        Loaded = true;
+                                }
+
+                                //  If still not successfully loaded, load the entire story contents from story.json
+                                if (!Loaded)
+                                {
+                                    string Json = File.ReadAllText(StoryFile);
+                                    Story = GeneralUtils.DeserializeJson<SerializableStory>(Json);
                                     string Summary = GeneralUtils.SerializeJson(Story.AsSummary(), true);
                                     File.WriteAllText(SummaryFile, Summary);
                                 }
@@ -818,7 +828,7 @@ window.scrollTo({{ top: scrollDiv, behavior: 'smooth'}});";
             {
                 foreach (string AuthorFolder in Directory.GetDirectories(BaseFolder))
                 {
-                    Task<List<(SerializableStory, string)>> AuthorStoriesTask = Task.Run(() => LoadStories(new DirectoryInfo(AuthorFolder).Name, AuthorFolder));
+                    Task<List<(SerializableStory, string)>> AuthorStoriesTask = Task.Run(() => LoadStories(new DirectoryInfo(AuthorFolder).Name, AuthorFolder));                    
                     StoryTasks.Add(AuthorStoriesTask);
                 }
             }
@@ -841,17 +851,26 @@ window.scrollTo({{ top: scrollDiv, behavior: 'smooth'}});";
                         {
                             try
                             {
+                                SerializableStory Story;
                                 string SummaryFile = Path.Combine(StoryFolder, LiteroticaStory.SummaryFilename);
-                                bool SummaryFileExists = File.Exists(SummaryFile);
-                                string JsonFile = SummaryFileExists ? SummaryFile : StoryFile;
 
-                                string Json = File.ReadAllText(JsonFile);
-                                SerializableStory Story = GeneralUtils.DeserializeJson<SerializableStory>(Json);
-                                LiteroticaStory StoryVM = new(this, Story, StoryFolder);
-                                Stories.Add(StoryVM);
-
-                                if (!SummaryFileExists)
+                                //  First try loading the data from the smaller story-metadata.json file
+                                bool Loaded = false;
+                                if (File.Exists(SummaryFile))
                                 {
+                                    string Json = File.ReadAllText(SummaryFile);
+                                    Story = GeneralUtils.DeserializeJson<SerializableStory>(Json);
+
+                                    //  If summary data is from an older version, it must be fully loaded and have its summary data re-written
+                                    if (Story.IsUpToDate)
+                                        Loaded = true;
+                                }
+
+                                //  If still not successfully loaded, load the entire story contents from story.json
+                                if (!Loaded)
+                                {
+                                    string Json = File.ReadAllText(StoryFile);
+                                    Story = GeneralUtils.DeserializeJson<SerializableStory>(Json);
                                     string Summary = GeneralUtils.SerializeJson(Story.AsSummary(), true);
                                     File.WriteAllText(SummaryFile, Summary);
                                 }

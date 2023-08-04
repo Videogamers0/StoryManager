@@ -77,7 +77,6 @@ namespace StoryManager.VM.Literotica
                 {
                     _Story = value;
                     NPC(nameof(Story));
-                    NPC(nameof(PageCount));
 
                     //  Initialize the buttons that are used to navigate to particular chapters/pages
                     if (Story == null)
@@ -120,7 +119,6 @@ namespace StoryManager.VM.Literotica
         public string Title => Summary.Title;
         public string FullDescription => string.Join("\n", Summary.Chapters.Select((x, index) => $"Ch{(index + 1):00}: {x.Description}"));
         public int ChapterCount => Summary.Chapters.Count;
-        public int PageCount => Story?.Chapters.Sum(x => x.Pages.Count) ?? 0;
         public double AverageRating
         {
             get
@@ -133,7 +131,6 @@ namespace StoryManager.VM.Literotica
             }
         }
         public bool HasOverallRating => Summary.Chapters.Any(x => x.Rating.HasValue);
-
 
         private ReadOnlyCollection<StoryNavigationButton> _ChapterNavButtons;
         public ReadOnlyCollection<StoryNavigationButton> ChapterNavButtons

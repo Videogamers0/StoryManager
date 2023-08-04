@@ -124,6 +124,7 @@
                         <RowDefinition Height="auto" />
                         <RowDefinition Height="auto" />
                         <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
@@ -158,8 +159,22 @@
                                    Visibility="{Binding MVM.Settings.DisplaySettings.ShowOverallRating, Mode=OneWay, Converter={StaticResource InverseBooleanToVisibilityConverter}, FallbackValue=Collapsed}" />
                     </Grid>
 
+                    <!-- Page Count / Word Count -->
+                    <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.Column="0" TextElement.FontSize="10" TextElement.FontStyle="Italic" TextElement.Foreground="Gray">
+                        <TextBlock VerticalAlignment="Center" Margin="0,0,8,0" d:Visibility="Visible"
+                                   Visibility="{Binding MVM.Settings.DisplaySettings.ShowPageCount, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}">
+                            <Run FontWeight="SemiBold" Text="{Binding Summary.PageCount, Mode=OneWay, FallbackValue=1}" d:Text="1" />
+                            <Run Text="page(s)" />
+                        </TextBlock>
+                        <TextBlock Margin="0,0,8,0" VerticalAlignment="Center" d:Visibility="Visible"
+                                   Visibility="{Binding MVM.Settings.DisplaySettings.ShowWordCount, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}">
+                            <Run FontWeight="SemiBold" Text="{Binding WordCount, Mode=OneTime, FallbackValue=0}" d:Text="999" />
+                            <Run Text="words" />
+                        </TextBlock>
+                    </StackPanel>
+
                     <!-- User Rating / Download date -->
-                    <DockPanel Grid.Row="2" Grid.Column="0">
+                    <DockPanel Grid.Row="3" Grid.Column="0">
                         <local:RatingControl DockPanel.Dock="Left" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0,1,0,0" Width="60" Height="16" 
                                              Value="{Binding BindableUserRating, Mode=TwoWay, FallbackValue=0}" d:Value="4" d:Visibility="Visible"
                                              Visibility="{Binding MVM.Settings.DisplaySettings.ShowUserRating, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}" />

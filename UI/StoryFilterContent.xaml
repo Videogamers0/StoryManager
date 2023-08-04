@@ -148,6 +148,10 @@
                     <Border Height="{StaticResource VerticalPadding1}" />
                     <CheckBox Content="Title" IsChecked="True" IsEnabled="False" />
                     <Border Height="{StaticResource VerticalPadding1}" />
+                    <CheckBox Content="Page Count" IsChecked="{Binding ShowPageCount, Mode=TwoWay}" />
+                    <Border Height="{StaticResource VerticalPadding1}" />
+                    <CheckBox Content="Word Count" IsChecked="{Binding ShowWordCount, Mode=TwoWay}" />
+                    <Border Height="{StaticResource VerticalPadding1}" />
                     <CheckBox Content="Your Rating" IsChecked="{Binding ShowUserRating, Mode=TwoWay}" />
                     <Border Height="{StaticResource VerticalPadding1}" />
                     <CheckBox Content="Downloaded Date" IsChecked="{Binding ShowDateDownloaded, Mode=TwoWay}" />
