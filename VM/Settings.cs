@@ -17,6 +17,13 @@ using Xceed.Wpf.Toolkit.Primitives;
 
 namespace StoryManager.VM
 {
+    public enum SortBy
+    {
+        Title,
+        FirstChapterDate,
+        LastChapterDate
+    }
+
     public class Settings : ViewModelBase
     {
         public SavedSettings PreviousSessionSettings { get; }
@@ -84,6 +91,22 @@ namespace StoryManager.VM
         }
 
         public event EventHandler<string> StoriesDirectoryChanged;
+
+        public const int DefaultHistorySize = 25;
+
+        private int _HistorySize;
+        public int HistorySize
+        {
+            get => _HistorySize;
+            set
+            {
+                if (_HistorySize != value)
+                {
+                    _HistorySize = value;
+                    NPC(nameof(HistorySize));
+                }
+            }
+        }
 
         #region Theme
         private static readonly Dictionary<Theme, ColorPalette> DefaultColorPalettes = new()
@@ -350,22 +373,7 @@ namespace StoryManager.VM
         public IReadOnlyList<string> GetKeywords() => CommaDelimitedKeywords == null ? new List<string>() : CommaDelimitedKeywords.Split(',').ToList();
         #endregion Keywords
 
-        public const int DefaultHistorySize = 25;
-
-        private int _HistorySize;
-        public int HistorySize
-        {
-            get => _HistorySize;
-            set
-            {
-                if (_HistorySize != value)
-                {
-                    _HistorySize = value;
-                    NPC(nameof(HistorySize));
-                }
-            }
-        }
-
+        #region Grouping
         private bool _GroupAllByAuthor;
         public bool GroupAllByAuthor
         {
@@ -398,6 +406,49 @@ namespace StoryManager.VM
             }
         }
 
+        public event EventHandler<bool> GroupFavoritesByAuthorChanged;
+        #endregion Grouping
+
+        #region Sorting
+        private SortBy _SortingMode;
+        public SortBy SortingMode
+        {
+            get => _SortingMode;
+            set
+            {
+                if (_SortingMode != value)
+                {
+                    _SortingMode = value;
+                    NPC(nameof(SortingMode));
+                    NPC(nameof(SortByTitle));
+                    NPC(nameof(SortByFirstChapterDate));
+                    NPC(nameof(SortByLastChapterDate));
+                    SortingModeChanged?.Invoke(this, SortingMode);
+                }
+            }
+        }
+
+        public bool SortByTitle
+        {
+            get => SortingMode == SortBy.Title;
+            set { if (value) SortingMode = SortBy.Title; }
+        }
+
+        public bool SortByFirstChapterDate
+        {
+            get => SortingMode == SortBy.FirstChapterDate;
+            set { if (value) SortingMode = SortBy.FirstChapterDate; }
+        }
+
+        public bool SortByLastChapterDate
+        {
+            get => SortingMode == SortBy.LastChapterDate;
+            set { if (value) SortingMode = SortBy.LastChapterDate; }
+        }
+
+        public event EventHandler<SortBy> SortingModeChanged;
+        #endregion Sorting
+
         private bool _WarnIfClosingUnsavedStory;
         public bool WarnIfClosingUnsavedStory
         {
@@ -411,8 +462,6 @@ namespace StoryManager.VM
                 }
             }
         }
-
-        public event EventHandler<bool> GroupFavoritesByAuthorChanged;
 
         public Settings(MainViewModel MVM)
         {
@@ -432,6 +481,8 @@ namespace StoryManager.VM
 
             GroupAllByAuthor = PreviousSessionSettings.GroupAllByAuthor;
             GroupFavoritesByAuthor = PreviousSessionSettings.GroupFavoritesByAuthor;
+
+            SortingMode = PreviousSessionSettings.SortingMode;
 
             WarnIfClosingUnsavedStory = PreviousSessionSettings.WarnIfClosingUnsavedStory;
 
@@ -504,6 +555,8 @@ namespace StoryManager.VM
 
                 GroupAllByAuthor = GroupAllByAuthor,
                 GroupFavoritesByAuthor = GroupFavoritesByAuthor,
+
+                SortingMode = SortingMode,
 
                 Keywords = CommaDelimitedKeywords,
 

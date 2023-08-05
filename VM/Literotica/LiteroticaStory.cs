@@ -111,8 +111,10 @@ namespace StoryManager.VM.Literotica
             }
         }
 
-        public string DateApprovedString => Summary.Chapters.First().DateApproved;
-        public DateTime? DateApproved { get; }
+        public string FirstChapterDateApprovedString => Summary.Chapters.First().DateApproved;
+        public string LastChapterDateApprovedString => Summary.Chapters.Last().DateApproved;
+        public DateTime? FirstChapterDateApproved { get; }
+        public DateTime? LastChapterDateApproved { get; }
         public DateTime DownloadedAt => Summary.DownloadedAt;
 
         public string AuthorName => Summary.Author.username;
@@ -330,7 +332,7 @@ namespace StoryManager.VM.Literotica
                 (!Settings.HideUnrated || UserRating.HasValue) &&
                 (!Settings.FilterByRating || (UserRating.HasValue && UserRating.Value >= Settings.MinRating && UserRating.Value <= Settings.MaxRating)) &&
                 (!Settings.FilterByWordCount || (WordCount >= Settings.MinWordCount && WordCount <= Settings.MaxWordCount)) &&
-                (!Settings.FilterByApprovalDate || !Settings.MinApprovalDate.HasValue || !DateApproved.HasValue || DateApproved.Value >= Settings.MinApprovalDate.Value) &&
+                (!Settings.FilterByApprovalDate || !Settings.MinApprovalDate.HasValue || !FirstChapterDateApproved.HasValue || FirstChapterDateApproved.Value >= Settings.MinApprovalDate.Value) &&
                 (!Settings.FilterByDownloadDate || !Settings.MinDownloadDate.HasValue || DownloadedAt >= Settings.MinDownloadDate.Value) &&
                 MVM.IsSearchMatch(this);
         }
@@ -350,8 +352,10 @@ namespace StoryManager.VM.Literotica
             }
             WordCount = Summary.Chapters.Sum(x => x.WordCount);
 
-            if (DateTime.TryParse(DateApprovedString, out DateTime ApprovedAt))
-                DateApproved = ApprovedAt;
+            if (DateTime.TryParse(FirstChapterDateApprovedString, out DateTime FirstChapterApprovedAt))
+                FirstChapterDateApproved = FirstChapterApprovedAt;
+            if (DateTime.TryParse(LastChapterDateApprovedString, out DateTime LastChapterApprovedAt))
+                LastChapterDateApproved = LastChapterApprovedAt;
 
             Categories = Summary.Chapters.Select(x => x.Category).DistinctBy(x => x.pageUrl).OrderBy(x => x.pageUrl).ToList().AsReadOnly();
 

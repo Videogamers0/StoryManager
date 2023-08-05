@@ -70,6 +70,9 @@ namespace StoryManager
         [DataMember(Name = "GroupFavoritesByAuthor")]
         public bool GroupFavoritesByAuthor { get; set; }
 
+        [DataMember(Name = "SortingMode")]
+        public SortBy SortingMode { get; set; }
+
         [DataMember(Name = "Keywords")]
         public string Keywords { get; set; }
 
@@ -137,6 +140,8 @@ namespace StoryManager
 
             GroupAllByAuthor = true;
             GroupFavoritesByAuthor = true;
+
+            SortingMode = SortBy.Title;
 
             Keywords = "";
 

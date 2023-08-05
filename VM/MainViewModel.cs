@@ -552,18 +552,29 @@ window.scrollTo({{ top: scrollDiv, behavior: 'smooth'}});";
 
             PropertyGroupDescription AuthorGroupDescription = new PropertyGroupDescription(nameof(LiteroticaStory.Group));
 
-            SortedStories = CollectionViewHelpers.GetSortedFilteredCollectionView(Stories, x => x.IsVisible, nameof(LiteroticaStory.IsVisible), nameof(LiteroticaStory.AuthorName), nameof(LiteroticaStory.Title));
-            SortedStories.GroupDescriptions.Add(AuthorGroupDescription);
+            //  Create SortDescriptions
+            SortDescription AuthorNameSortDescription = new SortDescription(nameof(LiteroticaStory.AuthorName), ListSortDirection.Ascending);
+            SortDescription TitleSortDescription = new SortDescription(nameof(LiteroticaStory.Title), ListSortDirection.Ascending);
+            SortDescription FirstChapterDateSortDescription = new SortDescription(nameof(LiteroticaStory.FirstChapterDateApproved), ListSortDirection.Descending);
+            SortDescription LastChapterDateSortDescription = new SortDescription(nameof(LiteroticaStory.LastChapterDateApproved), ListSortDirection.Descending);
+            SortDescription GetSortDescription(SortBy Value) => Value switch
+            {
+                SortBy.Title => TitleSortDescription,
+                SortBy.FirstChapterDate => FirstChapterDateSortDescription,
+                SortBy.LastChapterDate => LastChapterDateSortDescription,
+                _ => throw new NotImplementedException($"Unrecognized {nameof(SortBy)} enum value: {Value}")
+            };
 
+            //  Create ICollectionViews for each tab of stories
+            SortedStories = CollectionViewHelpers.GetSortedFilteredCollectionView(Stories, x => x.IsVisible, nameof(LiteroticaStory.IsVisible), AuthorNameSortDescription, TitleSortDescription);
+            SortedStories.GroupDescriptions.Add(AuthorGroupDescription);
             FavoritedStories = CollectionViewHelpers.GetSortedFilteredCollectionView(Stories, x => x.IsStoryFavorited /*|| x.IsAuthorFavorited*/,
                 new List<string>() { nameof(LiteroticaStory.IsStoryFavorited), nameof(LiteroticaStory.IsAuthorFavorited) },
-                new SortDescription[] { new SortDescription(nameof(LiteroticaStory.AuthorName), ListSortDirection.Ascending), new SortDescription(nameof(LiteroticaStory.Title), ListSortDirection.Ascending) });
+                AuthorNameSortDescription, TitleSortDescription);
             FavoritedStories.GroupDescriptions.Add(AuthorGroupDescription);
-
             RecentStories = new();
-
             QueuedStories = CollectionViewHelpers.GetSortedFilteredCollectionView(Stories, x => x.IsQueued, nameof(LiteroticaStory.IsQueued), 
-                new SortDescription(nameof(LiteroticaStory.QueuedAt), ListSortDirection.Descending), new SortDescription(nameof(LiteroticaStory.Title), ListSortDirection.Ascending));
+                new SortDescription(nameof(LiteroticaStory.QueuedAt), ListSortDirection.Descending), TitleSortDescription);
 
             Task LoadStoriesTask = LoadStoriesAsync(true);
 
@@ -582,42 +593,43 @@ window.scrollTo({{ top: scrollDiv, behavior: 'smooth'}});";
             {
                 try
                 {
-                    bool TryFindSortDescription(ICollectionView CV, string PropertyName, out SortDescription Result)
+                    void ValidateSortDescriptions(ICollectionView CV, params SortDescription[] DesiredSortDescriptions)
                     {
-                        foreach (SortDescription SD in CV.SortDescriptions)
+                        bool IsMatch = CV.SortDescriptions.Count == DesiredSortDescriptions.Length && CV.SortDescriptions.SequenceEqual(DesiredSortDescriptions);
+                        if (!IsMatch)
                         {
-                            if (SD.PropertyName == PropertyName)
-                            {
-                                Result = SD;
-                                return true;
-                            }
+                            CV.SortDescriptions.Clear();
+                            foreach (SortDescription SD in DesiredSortDescriptions)
+                                CV.SortDescriptions.Add(SD);
                         }
-
-                        Result = default;
-                        return false;
                     }
 
                     if (IsGrouping)
                     {
                         if (!SourceCollection.GroupDescriptions.Contains(AuthorGroupDescription))
                             SourceCollection.GroupDescriptions.Insert(0, AuthorGroupDescription);
-                        if (!TryFindSortDescription(SourceCollection, nameof(LiteroticaStory.AuthorName), out _))
-                            SourceCollection.SortDescriptions.Insert(0, new SortDescription(nameof(LiteroticaStory.AuthorName), ListSortDirection.Ascending));
+                        ValidateSortDescriptions(SourceCollection, AuthorNameSortDescription, GetSortDescription(Settings.SortingMode));
                     }
                     else
                     {
                         SourceCollection.GroupDescriptions.Remove(AuthorGroupDescription);
-                        if (TryFindSortDescription(SourceCollection, nameof(LiteroticaStory.AuthorName), out SortDescription AuthorNameSortDescription))
-                            SourceCollection.SortDescriptions.Remove(AuthorNameSortDescription);
+                        ValidateSortDescriptions(SourceCollection, GetSortDescription(Settings.SortingMode));
                     }
                 }
                 catch (Exception ex) { MessageBox.Show(ex.ToString()); }
             }
 
             UpdateSortingAndGrouping(SortedStories, Settings.GroupAllByAuthor);
-            Settings.GroupAllByAuthorChanged += (sender, value) => UpdateSortingAndGrouping(SortedStories, value);
             UpdateSortingAndGrouping(FavoritedStories, Settings.GroupFavoritesByAuthor);
+
+            //  Refresh the GroupDescriptions/SortDescriptions when corresponding settings are changed
+            Settings.GroupAllByAuthorChanged += (sender, value) => UpdateSortingAndGrouping(SortedStories, value);
             Settings.GroupFavoritesByAuthorChanged += (sender, value) => UpdateSortingAndGrouping(FavoritedStories, value);
+            Settings.SortingModeChanged += (sender, value) =>
+            {
+                UpdateSortingAndGrouping(SortedStories, Settings.GroupAllByAuthor);
+                UpdateSortingAndGrouping(FavoritedStories, Settings.GroupFavoritesByAuthor);
+            };
 
             SearchStoryTitles = true;
             SearchChapterTitles = true;

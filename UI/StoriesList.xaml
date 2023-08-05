@@ -141,7 +141,7 @@
                         <TextBlock VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,0,2"
                                    FontStyle="Italic" Foreground="Gray" d:Visibility="Visible" d:Text="01/11/2021"
                                    Visibility="{Binding MVM.Settings.DisplaySettings.ShowDateApproved, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}"
-                                   Text="{Binding DateApprovedString, Mode=OneWay, FallbackValue='&lt;date&gt;'}" />
+                                   Text="{Binding FirstChapterDateApprovedString, Mode=OneWay, FallbackValue='&lt;date&gt;'}" />
                     </DockPanel>
 
                     <!-- Overall Rating / Title -->

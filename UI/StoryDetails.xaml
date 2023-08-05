@@ -24,7 +24,7 @@
                 </ItemsControl>
             </ScrollViewer>
 
-            <TextBlock DockPanel.Dock="Right" HorizontalAlignment="Right" Text="{Binding DateApprovedString, Mode=OneWay, FallbackValue='&lt;date&gt;'}" />
+            <TextBlock DockPanel.Dock="Right" HorizontalAlignment="Right" Text="{Binding FirstChapterDateApprovedString, Mode=OneWay, FallbackValue='&lt;date&gt;'}" />
         </DockPanel>
         <Border Height="5" />
 
