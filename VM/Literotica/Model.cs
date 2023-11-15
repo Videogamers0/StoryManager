@@ -32,7 +32,8 @@ namespace StoryManager.VM.Literotica
 
                 foreach (LiteroticaSeriesItem item in submission.series.items.OrderBy(x => orderLookup[x.id]))
                 {
-                    yield return item.fullUrl;
+                    if (!string.IsNullOrEmpty(item.url)) // in very rare cases, the Literotica API returns a corrupted/non-existant chapter with url=""
+                        yield return item.fullUrl;
                 }
             }
         }

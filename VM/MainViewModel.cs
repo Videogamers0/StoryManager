@@ -863,7 +863,7 @@ window.scrollTo({{ top: scrollDiv, behavior: 'smooth'}});";
                         {
                             try
                             {
-                                SerializableStory Story;
+                                SerializableStory Story = null;
                                 string SummaryFile = Path.Combine(StoryFolder, LiteroticaStory.SummaryFilename);
 
                                 //  First try loading the data from the smaller story-metadata.json file
@@ -886,6 +886,8 @@ window.scrollTo({{ top: scrollDiv, behavior: 'smooth'}});";
                                     string Summary = GeneralUtils.SerializeJson(Story.AsSummary(), true);
                                     File.WriteAllText(SummaryFile, Summary);
                                 }
+
+                                Stories.Add(new(this, Story, StoryFolder));
                             }
                             catch (Exception ex) { MessageBox.Show($"Error loading story from file at '{StoryFile}':\n\n{ex}"); }
                         }

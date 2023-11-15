@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:StoryManager.UI"
         mc:Ignorable="d"
         WindowStartupLocation="CenterOwner"
-        Title="Story Downloader" Height="400" Width="700" MinHeight="350" MinWidth="400">
+        Title="Story Downloader" Height="400" Width="700" MinHeight="250" MinWidth="300">
 
     <Window.Resources>
         <Style TargetType="{x:Type Button}">
