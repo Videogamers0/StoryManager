@@ -7,7 +7,7 @@
     <OutputType>WinExe</OutputType>
     <UseWPF>True</UseWPF>
     <ApplicationIcon>Booklet_Blue.ico</ApplicationIcon>
-    <FileVersion>1.0.5.0</FileVersion>
+    <FileVersion>1.0.6.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
