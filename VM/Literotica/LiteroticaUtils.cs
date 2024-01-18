@@ -15,10 +15,16 @@ namespace StoryManager.VM.Literotica
 {
     public static class LiteroticaUtils
     {
+        private static readonly ReadOnlyCollection<string> Localizations = new List<string>() {
+            "german", "dutch", "spanish", "french", "italian", "romanian", "portuguese", "other"
+        }.AsReadOnly();
+
         private static readonly ReadOnlyCollection<string> StoryUriFormats = new List<string>()
         {
             // https://www.literotica.com/s/{title}
             @"^(?i)(https?:\/\/)?(www\.)?literotica\.com\/s\/(?-i)(?<Value>[^\?]+).*$",
+            // https://www.{language}.literotica.com/s/{title}
+            $@"^(?i)(https?:\/\/)?(www\.)?({string.Join("|", Localizations.Select(Regex.Escape))})\.literotica\.com\/s\/(?-i)(?<Value>[^\?]+).*$",
             // https://www.literotica.com/stories/showstory.php?url={title}
             @"^(?i)(https?:\/\/)?(www\.)?literotica\.com\/stories\/showstory\.php\?url=(?-i)(?<Value>[^\?&]+).*$",
             // https://i.literotica.com/stories/showstory.php?id={id}
