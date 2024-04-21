@@ -16,7 +16,7 @@ namespace StoryManager.VM.Literotica
         public LiteroticaAuthor Author { get; }
         public string AuthorName => Author.username;
 
-        public string Url => $"https://www.literotica.com/stories/memberpage.php?uid={Author.userid}&page=submissions";
+        public string Url => Author.GetUrl();
 
         public bool IsSelected => MVM.SelectedStory?.AuthorName == AuthorName;
 

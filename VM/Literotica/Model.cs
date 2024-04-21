@@ -95,6 +95,12 @@ namespace StoryManager.VM.Literotica
         public int userid { get; set; }
         public string username { get; set; }
 
+#if LEGACY_AUTHOR_URL
+        public string GetUrl() => LiteroticaUtils.GetAuthorUrl(true, userid, username, true);
+#else
+        public string GetUrl() => LiteroticaUtils.GetAuthorUrl(false, userid, username, true);
+#endif
+
         public override string ToString() => $"{nameof(LiteroticaAuthor)}: {username} ({userid})";
     }
 

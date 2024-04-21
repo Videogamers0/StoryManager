@@ -207,5 +207,26 @@ namespace StoryManager.VM.Literotica
             LiteroticaSearchResults result = GeneralUtils.DeserializeJson<LiteroticaSearchResults>(Json);
             return result;
         }
+
+        /// <param name="legacyFormat">If <see langword="true"/>, the returned url will be in the older format: 
+        /// <code>https://www.literotica.com/stories/memberpage.php?uid={Author.userid}&amp;page=submissions</code><para/>
+        /// If <see langword="false"/>, the returned url will be in the newer format: 
+        /// <code>https://www.literotica.com/authors/{Author.username}/works/stories</code></param>
+        /// <param name="combinedChapters">Only relevant if <paramref name="legacyFormat"/> is <see langword="true"/>. 
+        /// If <see langword="true"/>, stories from the same series will be combined into a single entry. (Sets queryParam 'listType' to 'combined')</param>
+        /// <param name="userId">Only required if <paramref name="legacyFormat"/> is <see langword="true"/></param>
+        /// <param name="username">Only required if <paramref name="legacyFormat"/> is <see langword="false"/></param>
+        public static string GetAuthorUrl(bool legacyFormat, int userId, string username, bool combinedChapters = true)
+        {
+            if (legacyFormat)
+                return $"https://www.literotica.com/stories/memberpage.php?uid={userId}&page=submissions";
+            else
+            {
+                string url = $"https://www.literotica.com/authors/{username}/works/stories";
+                if (combinedChapters)
+                    url += "?listType=combined";
+                return url;
+            }
+        }
     }
 }

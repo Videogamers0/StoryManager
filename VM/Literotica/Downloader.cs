@@ -182,7 +182,7 @@ namespace StoryManager.VM.Literotica
         public bool IsCancelling => CTS?.IsCancellationRequested == true;
         public DelegateCommand<object> CancelAsync => new(_ => { CTS?.Cancel(); NPC(nameof(IsCancelling)); });
 
-        private const string UrlPattern = @"((https?:\/\/)?(www\.))?literotica\.com\/s\/[^""]+";
+        private const string UrlPattern = @"((https?:\/\/)?(www\.))?(literotica\.com)?\/s\/[^""]+";
         private const string TitlePattern = @"(?<Title>.{1,256}?)"; // Must use non-greedy match so it doesn't end up capturing the "</a>" within the title
         //  Sometimes the content of the hyperlink is something like "<span>{Title}</span><!-- // -->" instead of just the story title.
         private static readonly string HyperlinkContentPattern = $@"(<span>{TitlePattern}<\/span>(<!-- \/\/ -->)?|{TitlePattern})";
@@ -238,10 +238,18 @@ namespace StoryManager.VM.Literotica
                     ClipboardUrl = Value;
 
                     //  Attempt to autofill the author url if the clipboard text matches the expected author url format and user hasn't manually placed a url into the Author textbox
-                    if (!string.IsNullOrEmpty(Value) && Value.Contains(@"literotica.com/stories/memberpage.php?uid=") && (string.IsNullOrEmpty(AuthorUrl) || AuthorUrl == PrefilledAuthorUrl))
+                    if (!string.IsNullOrEmpty(Value) && (string.IsNullOrEmpty(AuthorUrl) || AuthorUrl == PrefilledAuthorUrl))
                     {
-                        AuthorUrl = UrlExtensions.SetUrlParameter(Value, "page", "submissions");
-                        PrefilledAuthorUrl = AuthorUrl;
+                        if (Value.Contains(@"literotica.com/stories/memberpage.php?uid="))
+                        {
+                            AuthorUrl = UrlExtensions.SetUrlParameter(Value, "page", "submissions");
+                            PrefilledAuthorUrl = AuthorUrl;
+                        }
+                        else if (Value.Contains(@"literotica.com/authors/"))
+                        {
+                            AuthorUrl = Value;
+                            PrefilledAuthorUrl = AuthorUrl;
+                        }
                     }
                 }
                 else
@@ -298,8 +306,12 @@ namespace StoryManager.VM.Literotica
                 string ActualAuthorUrl;
                 if (int.TryParse(AuthorUrl, out int AuthorId))
                     ActualAuthorUrl = $"https://www.literotica.com/stories/memberpage.php?uid={AuthorId}&page=submissions";
-                else
+                else if (AuthorUrl.Contains(@"@""literotica.com/stories/memberpage.php?uid="))
                     ActualAuthorUrl = UrlExtensions.SetUrlParameter(AuthorUrl, "page", "submissions");
+                else if (!AuthorUrl.Contains(@"\"))
+                    ActualAuthorUrl = $@"https://www.literotica.com/authors/{AuthorUrl}/works/stories";
+                else
+                    ActualAuthorUrl = AuthorUrl;
 
                 ProcessingText = ActualAuthorUrl;
                 string Content = await GeneralUtils.ExecuteGetAsync(ActualAuthorUrl);
@@ -307,8 +319,9 @@ namespace StoryManager.VM.Literotica
                 if (!StoryUrlParser.IsMatch(Content))
                 {
                     string Message = $"Failed to retrieve stories from author's page at:\n\n{ActualAuthorUrl}" +
-                        $"\n\nThe author url should be in similar format to this example:" +
-                        $"\n\nhttps://www.literotica.com/stories/memberpage.php?uid=1133735&page=submissions";
+                        $"\n\nThe author url should be in a similar format to one of these examples:" +
+                        $"\n\nhttps://www.literotica.com/stories/memberpage.php?uid=1133735&page=submissions" +
+                        $"\nhttps://www.literotica.com/authors/stewartlinda/works/stories";
                     MessageBox.Show(Message);
                 }
                 else
@@ -321,6 +334,8 @@ namespace StoryManager.VM.Literotica
                     foreach (Match Match in StoryUrlParser.Matches(Content))
                     {
                         string StoryUrl = Match.Groups["Url"].Value;
+                        if (StoryUrl.StartsWith("/s"))
+                            StoryUrl = $"https://www.literotica.com{StoryUrl}";
                         string StoryTitle = Match.Groups["Title"].Value;
 
                         if (ChapterNumberParser.IsMatch(StoryUrl))

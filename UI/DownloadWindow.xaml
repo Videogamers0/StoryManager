@@ -78,7 +78,7 @@
                 <DockPanel>
                     <!-- Parse story urls from author page -->
                     <DockPanel DockPanel.Dock="Top">
-                        <TextBlock VerticalAlignment="Center" DockPanel.Dock="Left" Text="Author URL:" />
+                        <TextBlock VerticalAlignment="Center" DockPanel.Dock="Left" Text="Author name or URL:" />
                         <Button DockPanel.Dock="Right" Content="Retrieve stories by Author" Command="{Binding GetStoriesFromAuthorUrl}"
                                 IsEnabled="{Binding CanGetStoriesFromAuthorUrl, Mode=OneWay}"/>
                         <TextBox Margin="6,0" Text="{Binding AuthorUrl, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="False" />

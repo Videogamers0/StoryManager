@@ -7,8 +7,12 @@
     <OutputType>WinExe</OutputType>
     <UseWPF>True</UseWPF>
     <ApplicationIcon>Booklet_Blue.ico</ApplicationIcon>
-    <FileVersion>1.0.6.0</FileVersion>
+    <FileVersion>1.0.7.0</FileVersion>
   </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'" />
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'" />
 
   <ItemGroup>
     <None Remove="Resources\BarChart_64x64.png" />

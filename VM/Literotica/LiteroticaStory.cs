@@ -453,7 +453,7 @@ namespace StoryManager.VM.Literotica
         {
             StringBuilder SB = new();
             string url = Story.Chapters.First().FullUrl;
-            string authorUrl = $"https://www.literotica.com/stories/memberpage.php?uid={Story.Author.userid}&page=submissions";
+            string authorUrl = Story.Author.GetUrl();
             SB.AppendLine($"<a href='{url}'>{url}</a> by <a href='{authorUrl}'>{AuthorName}</a><h1 align=\"center\">{Title}</h1>");
 
             for (int i = 0; i < Story.Chapters.Count; i++)
