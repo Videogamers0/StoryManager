@@ -308,7 +308,7 @@ namespace StoryManager.VM.Literotica
                     ActualAuthorUrl = $"https://www.literotica.com/stories/memberpage.php?uid={AuthorId}&page=submissions";
                 else if (AuthorUrl.Contains(@"@""literotica.com/stories/memberpage.php?uid="))
                     ActualAuthorUrl = UrlExtensions.SetUrlParameter(AuthorUrl, "page", "submissions");
-                else if (!AuthorUrl.Contains(@"\"))
+                else if (!AuthorUrl.Contains(@"\") && !AuthorUrl.Contains(@"/")) // Assume the url is just the author's name if there are no directory separators
                     ActualAuthorUrl = $@"https://www.literotica.com/authors/{AuthorUrl}/works/stories";
                 else
                     ActualAuthorUrl = AuthorUrl;
