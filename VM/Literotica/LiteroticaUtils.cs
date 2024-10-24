@@ -208,6 +208,23 @@ namespace StoryManager.VM.Literotica
             return result;
         }
 
+        public static async Task<LiteroticaAuthorStories> GetStoriesByAuthor(string authorName, CancellationToken? ct = null)
+        {
+            const string endpoint = @"https://literotica.com/api/3/users/";
+            object queryParams = new
+            {
+                sort = "date",
+                type = "story",
+                listType = "expanded"
+            };
+            string queryString = $"?params={HttpUtility.UrlEncode(GeneralUtils.SerializeJson(queryParams, false))}";
+            string url = $"{endpoint}{authorName}/series_and_works{queryString}";
+
+            string Json = await GeneralUtils.ExecuteGetAsync(url, ct ?? CancellationToken.None);
+            LiteroticaAuthorStories result = GeneralUtils.DeserializeJson<LiteroticaAuthorStories>(Json);
+            return result;
+        }
+
         /// <param name="legacyFormat">If <see langword="true"/>, the returned url will be in the older format: 
         /// <code>https://www.literotica.com/stories/memberpage.php?uid={Author.userid}&amp;page=submissions</code><para/>
         /// If <see langword="false"/>, the returned url will be in the newer format: 

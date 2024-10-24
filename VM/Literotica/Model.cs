@@ -78,6 +78,7 @@ namespace StoryManager.VM.Literotica
         public bool IsInSeries => series_count > 1;
         [JsonConverter(typeof(IgnoreUnexpectedArraysConverter<LiteroticaSeries>))]
         public LiteroticaSeries series { get; set; }
+        public List<LiteroticaSeriesItem> parts { get; set; }
         public int words_count { get; set; }
 
         [JsonIgnore]
@@ -151,6 +152,12 @@ namespace StoryManager.VM.Literotica
         public string fullUrl => $@"https://www.literotica.com/s/{url}";
 
         public override string ToString() => $"{title} ({id}|{url})";
+    }
+
+    public class LiteroticaAuthorStories
+    {
+        public bool has_series { get; set; }
+        public List<LiteroticaSubmission> data { get; set; }
     }
 
     public class LiteroticaSearchResults

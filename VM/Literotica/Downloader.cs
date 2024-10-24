@@ -303,6 +303,7 @@ namespace StoryManager.VM.Literotica
 
             try
             {
+#if LEGACY_CODE
                 string ActualAuthorUrl;
                 if (int.TryParse(AuthorUrl, out int AuthorId))
                     ActualAuthorUrl = $"https://www.literotica.com/stories/memberpage.php?uid={AuthorId}&page=submissions";
@@ -364,6 +365,43 @@ namespace StoryManager.VM.Literotica
 
                     PrefilledAuthorUrl = null;
                 }
+#else
+                string AuthorName = AuthorUrl;
+
+                ProcessingText = AuthorName;
+
+                LiteroticaAuthorStories Stories = await LiteroticaUtils.GetStoriesByAuthor(AuthorUrl);
+
+                foreach (PendingStory Item in PendingDownloads)
+                    Item.OnCheckStateChanged -= Story_CheckStateChangedHandler;
+                PendingDownloads.Clear();
+
+                List<PendingStory> Temp = new();
+                foreach (LiteroticaSubmission Submission in Stories.data)
+                {
+                    string StoryShortUrl = Submission.url;
+                    if (string.IsNullOrEmpty(StoryShortUrl) && Submission.parts?.Count > 0)
+                        StoryShortUrl = Submission.parts[0].url;
+                    string StoryUrl = $"https://www.literotica.com/s/{StoryShortUrl}";
+                    Temp.Add(new(StoryUrl, Submission.title, true));
+                }
+
+                if (Temp.Any())
+                {
+                    Temp.RemoveAll(x => IsAlreadyDownloaded(x.Url));
+                    if (!Temp.Any())
+                    {
+                        MessageBox.Show($"All stories by this author are already downloaded.");
+                    }
+                    else
+                    {
+                        foreach (PendingStory Item in Temp)
+                            PendingDownloads.Add(Item);
+                    }
+                }
+
+                PrefilledAuthorUrl = null;
+#endif
             }
             catch (Exception ex) { MessageBox.Show(ex.ToString()); }
             finally
