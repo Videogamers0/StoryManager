@@ -7,7 +7,7 @@
     <OutputType>WinExe</OutputType>
     <UseWPF>True</UseWPF>
     <ApplicationIcon>Booklet_Blue.ico</ApplicationIcon>
-    <FileVersion>1.0.9.0</FileVersion>
+    <FileVersion>1.0.10.0</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'" />
