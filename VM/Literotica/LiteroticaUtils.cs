@@ -72,7 +72,8 @@ namespace StoryManager.VM.Literotica
                 if (Regex.IsMatch(url, Pattern))
                 {
                     string Value = Regex.Match(url, Pattern).Groups["Value"].Value;
-                    result = $"https://www.literotica.com/api/3/stories/{Value}";
+                    //  Note: As of 2024-12-25, https://www.literotica.com/ HTTP requests return 404 NotFound responses. Must use https://literotica.com/ instead (no www)
+                    result = $"https://literotica.com/api/3/stories/{Value}";
                     return true;
                 }
             }
